@@ -1,0 +1,5 @@
+PATCH http://localhost:3000
+Content-Type: application/x-www-form-urlencoded
+
+email=john@hotmail.com &
+password=12345678#
