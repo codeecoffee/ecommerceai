@@ -9,19 +9,23 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
+
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(20)
-  firstName: string;
+  firstName!: string;
+
   @IsString()
   @IsOptional()
   @MinLength(3)
   @MaxLength(50)
   lastName?: string;
+
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
+  
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
@@ -29,5 +33,5 @@ export class CreateUserDto {
     message:
       'Please enter a password with at least 8 characters, one letter, one number and one special character',
   })
-  password: string;
+  password!: string;
 }

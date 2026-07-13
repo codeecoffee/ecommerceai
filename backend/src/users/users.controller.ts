@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -9,22 +10,21 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user-param.dto';
 import { GetUsersParamDto } from './dto/get-users-param.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
-
+import { UsersService } from './providers/users.service';
 @Controller('users')
 export class UsersController {
+  constructor(private readonly userService: UsersService) {}
   @Get()
   public getUsers(
     @Param() getUserParamDto: GetUsersParamDto,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
-  ) {
-    console.log(getUserParamDto);
-    console.log('limit', limit);
-    console.log('page', page);
-    return 'You sent a get request to Users';
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) 
+  {
+    return this.userService.findAllUsers(getUserParamDto, limit, page);
   }
 
   @Post()
@@ -36,5 +36,10 @@ export class UsersController {
   @Patch()
   public patchUser(@Body() patchUserDto: PatchUserDTO) {
     console.log('patchUserDto', patchUserDto);
+  }
+
+  @Delete()
+  public deleteUser(@Body() deleteUserDto: PatchUserDTO) {
+    console.log('deleteUserDto', deleteUserDto);
   }
 }
