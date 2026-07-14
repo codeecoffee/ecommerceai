@@ -1,0 +1,4 @@
+model Address{
+    address_id String @id @default(uuid())
+    users User[]
+}

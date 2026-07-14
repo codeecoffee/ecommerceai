@@ -1,0 +1,20 @@
+//Many Users can have the same address
+model User {
+    id String @id @default(uuid())
+    first_name String 
+    last_name String
+    email String @unique
+    address Address? @relation(fields: [address_id], references: [address_id])
+    address_id String?
+    role Role @default(USER)
+    password_hash String
+    posts Post[]
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+
+}
+enum Role{
+    USER
+    ADMIN
+}

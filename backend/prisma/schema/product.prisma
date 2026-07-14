@@ -1,0 +1,12 @@
+model Product{
+    prod_id String @id @default(uuid())
+    sku String @unique
+    name String 
+    description String
+    price Decimal
+    stock_qty Int
+    category_id String
+    category Category @relation(fields:[category_id], references:[category_id])
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}
