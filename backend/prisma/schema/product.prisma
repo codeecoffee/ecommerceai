@@ -3,6 +3,7 @@ model Product {
   sku             String             @unique
   name            String
   description     String
+  photo_url       String?
   price           Decimal
   stock_qty       Int
   category_id     String
