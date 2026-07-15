@@ -1,4 +1,10 @@
-model Address{
-    address_id String @id @default(uuid())
-    users User[]
+model Address {
+  address_id  String  @id @default(uuid())
+  street      String
+  city        String
+  state       String
+  postal_code String
+  country     String
+  users       User[]
+  orders      Order[]
 }

@@ -1,0 +1,12 @@
+model Recommendation {
+  recommendation_id String   @id @default(uuid())
+  score             Float
+  reason            String
+  model_version     String
+  is_dismissed      String
+  user              User     @relation(fields: [user_id], references: [id])
+  user_id           String
+  product           Product  @relation(fields: [prod_id], references: [prod_id])
+  prod_id           String
+  generated_at      DateTime @default(now())
+}

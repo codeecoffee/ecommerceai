@@ -1,13 +1,11 @@
-//One author can have many posts
-//One post is attached to one product, one product can have many posts
-model Post{
-    post_id String @id @default(uuid())
-    author User @relation(fields: [author_id], references: [id])
-    author_id String
-    raiting Int
-    comment String
-    //product_id
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
+model Post {
+  post_id    String   @id @default(uuid())
+  author     User     @relation(fields: [author_id], references: [id])
+  author_id  String
+  raiting    Int
+  comment    String
+  product    Product  @relation(fields: [product_id], references: [prod_id])
+  product_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

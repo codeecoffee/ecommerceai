@@ -1,0 +1,12 @@
+model Purchase_history {
+  history_id   String   @default(uuid())
+  quantity     Int
+  price_paid   Decimal
+  user         User     @relation(fields: [user_id], references: [id])
+  order        Order    @relation(fields: [order_id], references: [order_id])
+  product      Product  @relation(fields: [prod_id], references: [prod_id])
+  user_id      String
+  prod_id      String
+  order_id     String
+  purchased_at DateTime @default(now())
+}

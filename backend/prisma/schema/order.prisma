@@ -1,0 +1,23 @@
+model Order {
+  order_id      String             @id @default(uuid())
+  status        OrderStatus        @default(PENDING)
+  total         Decimal
+  purchase_hist Purchase_history[]
+  order_items   Order_item[]
+  user          User               @relation(fields: [user_id], references: [id])
+  user_id       String
+  address       Address            @relation(fields: [address_id], references: [address_id])
+  address_id    String
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
+}
+
+enum OrderStatus {
+  PENDING // order created, awaiting payment confirmation
+  CONFIRMED // payment succeeded, order accepted
+  PROCESSING // being prepared/packed in the warehouse
+  SHIPPED // handed off to carrier
+  DELIVERED // received by customer
+  CANCELLED // cancelled before shipping (by user or system)
+  REFUNDED // returned/refunded after delivery
+}
