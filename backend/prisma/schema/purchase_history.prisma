@@ -1,5 +1,5 @@
 model Purchase_history {
-  history_id   String   @default(uuid())
+  history_id   String   @id @default(uuid())
   quantity     Int
   price_paid   Decimal
   user         User     @relation(fields: [user_id], references: [id])
