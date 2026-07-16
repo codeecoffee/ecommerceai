@@ -1,0 +1,15 @@
+model Cart {
+  cart_id    String      @id @default(uuid())
+  user       User        @relation(fields: [user_id], references: [id])
+  user_id    String
+  status     Status
+  cart_items Cart_item[]
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+}
+
+enum Status {
+  ACTIVE
+  ABANDONED
+  CONVERTED
+}

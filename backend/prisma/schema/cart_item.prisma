@@ -1,0 +1,9 @@
+model Cart_item {
+  cart_item_id String  @id @default(uuid())
+  quantity     Int
+  price_at_add Decimal
+  cart         Cart    @relation(fields: [cart_id], references: [cart_id])
+  cart_id      String
+  product      Product @relation(fields: [prod_id], references: [prod_id])
+  prod_id      String
+}

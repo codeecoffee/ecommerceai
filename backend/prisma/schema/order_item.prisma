@@ -1,0 +1,9 @@
+model Order_item {
+  order_item        String  @id @default(uuid())
+  order             Order   @relation(fields: [order_id], references: [order_id])
+  order_id          String
+  product           Product @relation(fields: [prod_id], references: [prod_id])
+  prod_id           String
+  quantity          Int
+  price_at_purchase Decimal
+}

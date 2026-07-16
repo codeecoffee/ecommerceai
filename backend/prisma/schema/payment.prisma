@@ -1,0 +1,15 @@
+model Payment {
+  payment_id     String        @id @default(uuid())
+  provider       String
+  transaction_id String
+  status         PaymentStatus @default(PENDING)
+}
+enum PaymentStatus {
+  PENDING // payment initiated, not yet confirmed
+  PROCESSING // actively being processed by the provider
+  COMPLETED // successfully captured/settled
+  FAILED // card declined, provider error, etc.
+  CANCELLED // user or system cancelled before completion
+  REFUNDED // fully refunded after being completed
+  PARTIALLY_REFUNDED // partial refund issued
+}
