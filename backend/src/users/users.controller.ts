@@ -43,19 +43,24 @@ export class UsersController {
     description: 'The position of the page number that you want the api to return ',
     example: 1
   })
-  public getUsers(
-    @Param() getUserParamDto: GetUsersParamDto,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ) 
-  {
-    return this.userService.findAllUsers(getUserParamDto, limit, page);
+  public getUsers(){
+    return 'user'
   }
+  // public getUsers(
+  //   @Param() getUserParamDto: GetUsersParamDto,
+  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  //   @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  // ) 
+  // {
+  //   return this.userService.findAllUsers(getUserParamDto, limit, page);
+  // }
 
   @Post()
-  public createUsers(@Body() createUserDto: CreateUserDto): string {
-    console.log('body', createUserDto);
-    return 'You sent a new user';
+    @ApiOperation({
+    summary: "Creates a new User"
+  })
+  public createUser(@Body() createUserInput: CreateUserDto){
+    return this.userService.createUser(createUserInput)
   }
 
   @Patch()

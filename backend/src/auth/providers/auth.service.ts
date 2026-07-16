@@ -7,7 +7,8 @@ export class AuthService {
     constructor(@ Inject(forwardRef(()=>UsersService))private readonly usersService: UsersService) {}
 
     public login(email: string, password: string, id: number) {
-        const user = this.usersService.findUserById(id);
+        //const user = this.usersService.findUserById(id);
+        const user = 'John'
         return {token: 'jwt-token', user};
     }
     public isAuthenticated(token: string):boolean {

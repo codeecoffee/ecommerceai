@@ -1,8 +1,9 @@
 import { Injectable, Inject, forwardRef } from "@nestjs/common";
-import { GetUsersParamDto } from "../dto/get-users-param.dto";
+import { Prisma } from "../../../prisma/src/generated/prisma/client";
 import { AuthService } from "../../auth/providers/auth.service";
 import { DatabaseService } from "../../database/providers/database.service";
-import { Prisma } from "../../../prisma/src/generated/prisma/client";
+import { GetUsersParamDto } from "../dto/get-users-param.dto";
+import { CreateUserDto } from "../dto/create-user-param.dto";
 
 @Injectable()
 export class UsersService {
@@ -13,36 +14,32 @@ export class UsersService {
         private readonly dbService: DatabaseService
     ){}
 
-    public createUser(createUserData: Prisma.UserCreateInput){
-        this.dbService.user.create({data: createUserData})
+    private async mapDtoToPrismaInput(dto: CreateUserDto): Promise<Prisma.UserUncheckedCreateInput>{
+        return{
+            first_name: dto.firstName,
+            last_name: dto.lastName,
+            email: dto.email,
+            photo_url: dto.photoUrl,
+            address_id:dto.addressId,
+            role:dto.role,
+            password_hash: 'Test1234'
+        }
+    }
+
+    public async createUser(dto: CreateUserDto){
+        const data = await this.mapDtoToPrismaInput(dto)
+        this.dbService.user.create({data})
     }
     
-    public findAllUsers(getUserParamDto: GetUsersParamDto, limit: number, page: number) {
+    public getUsers() {
         const isAuthenticated = this.authService.isAuthenticated('jwt-token');
         if (!isAuthenticated) {
             throw new Error('Unauthorized');
         }
-        return [
-            {
-                id: 1,
-                name: 'John Doe',
-                email: 'john@msn.com',
-                password: '123456'
-            },
-            {
-                id: 2,
-                name: 'Jane Doe',
-                email: 'jane@msn.com',
-                password: '12345678'
-            }
-        ]
+        return this.dbService.user.findMany()
     
     }
-    public findUserById(id: number) {
-        return {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@msn.com'
-        }
+    public getUserById(id: string) {
+        return this.dbService.user.findUnique({where:{id}})
     }
 }

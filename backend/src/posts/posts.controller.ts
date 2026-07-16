@@ -13,22 +13,22 @@ export class PostsController {
         return this.postsService.createPost(createPostDto);
     }
 
-    @Get('posts')
-    public getPosts(
-        @Param() getPostsParamDto: GetPostsParamDto,
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
-    )
-    {
-        return this.postsService.getPosts(getPostsParamDto, limit, page);
-    }
+    // @Get('posts')
+    // public getPosts(
+    //     @Param() getPostsParamDto: GetPostsParamDto,
+    //     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    //     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
+    // )
+    // {
+    //     return this.postsService.getPosts(getPostsParamDto, limit, page);
+    // }
 
-    @Get('posts/:authorId')
-    public getPostsByAuthorId(
-        @Param('authorId', ParseIntPipe) authorId: number,
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
-    ){
-        return this.postsService.getPosts({ authorId }, limit, page);
-    }
+    // @Get('posts/:authorId')
+    // public getPostsByAuthorId(
+    //     @Param('authorId', ParseIntPipe) authorId: number,
+    //     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    //     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
+    // ){
+    //     return this.postsService.getPosts({ authorId }, limit, page);
+    // }
 }
