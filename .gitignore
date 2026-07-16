@@ -5,10 +5,12 @@ Thumbs.db
 # Editors
 .vscode/
 .idea/
-
 # Env
 .env
 .env.local
 
 # Logs
 *.log
+
+#local db data
+db/
