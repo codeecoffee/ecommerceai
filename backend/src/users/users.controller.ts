@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user-param.dto';
-import { GetUsersParamDto } from './dto/get-users-param.dto';
+import { GetUsersParamDto } from './dto/get-user-param.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
@@ -27,22 +27,22 @@ export class UsersController {
   })
   @ApiResponse({
     status: 200,
-    description: " Users fetched successfully based on query"
+    description: "Users fetched successfully based on query"
   })
-  @ApiQuery({
-    name: 'limit',
-    type: 'number',
-    required: false,
-    description: 'number of entries returned per query',
-    example: 10
-  })
-    @ApiQuery({
-    name: 'page',
-    type: 'number',
-    required: false,
-    description: 'The position of the page number that you want the api to return ',
-    example: 1
-  })
+  // @ApiQuery({
+  //   name: 'limit',
+  //   type: 'number',
+  //   required: false,
+  //   description: 'number of entries returned per query',
+  //   example: 10
+  // })
+  //   @ApiQuery({
+  //   name: 'page',
+  //   type: 'number',
+  //   required: false,
+  //   description: 'The position of the page number that you want the api to return ',
+  //   example: 1
+  // })
   public getUsers(){
     return 'user'
   }
@@ -56,8 +56,12 @@ export class UsersController {
   // }
 
   @Post()
-    @ApiOperation({
-    summary: "Creates a new User"
+  @ApiOperation({
+  summary: "Creates a new User"
+  })
+  @ApiResponse({
+    status: 201,
+    description:"User created successfully"
   })
   public createUser(@Body() createUserInput: CreateUserDto){
     return this.userService.createUser(createUserInput)

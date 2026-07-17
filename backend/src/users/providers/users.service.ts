@@ -2,7 +2,7 @@ import { Injectable, Inject, forwardRef } from "@nestjs/common";
 import { Prisma } from "../../../prisma/src/generated/prisma/client";
 import { AuthService } from "../../auth/providers/auth.service";
 import { DatabaseService } from "../../database/providers/database.service";
-import { GetUsersParamDto } from "../dto/get-users-param.dto";
+import { GetUsersParamDto } from "../dto/get-user-param.dto";
 import { CreateUserDto } from "../dto/create-user-param.dto";
 
 @Injectable()
@@ -28,14 +28,14 @@ export class UsersService {
 
     public async createUser(dto: CreateUserDto){
         const data = await this.mapDtoToPrismaInput(dto)
-        this.dbService.user.create({data})
+        return await this.dbService.user.create({data})
     }
     
     public getUsers() {
-        const isAuthenticated = this.authService.isAuthenticated('jwt-token');
-        if (!isAuthenticated) {
-            throw new Error('Unauthorized');
-        }
+        // const isAuthenticated = this.authService.isAuthenticated('jwt-token');
+        // if (!isAuthenticated) {
+        //     throw new Error('Unauthorized');
+        // }
         return this.dbService.user.findMany()
     
     }
