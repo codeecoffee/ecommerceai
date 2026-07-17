@@ -14,7 +14,8 @@ import { CreateUserDto } from './dto/create-user-param.dto';
 import { GetUsersParamDto } from './dto/get-user-param.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { GetUsersQueryDto } from './dto/get-users-query.dto';
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
@@ -29,31 +30,42 @@ export class UsersController {
     status: 200,
     description: "Users fetched successfully based on query"
   })
-  // @ApiQuery({
-  //   name: 'limit',
-  //   type: 'number',
-  //   required: false,
-  //   description: 'number of entries returned per query',
-  //   example: 10
-  // })
-  //   @ApiQuery({
-  //   name: 'page',
-  //   type: 'number',
-  //   required: false,
-  //   description: 'The position of the page number that you want the api to return ',
-  //   example: 1
-  // })
-  public getUsers(){
-    return 'user'
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'number of entries returned per query',
+    example: 10
+  })
+    @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description: 'The position of the page number that you want the api to return ',
+    example: 1
+  })
+  public getUsers(@Query() query: GetUsersQueryDto){
+    return this.userService.getUsers(query.page, query.limit)
   }
-  // public getUsers(
-  //   @Param() getUserParamDto: GetUsersParamDto,
-  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  //   @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  // ) 
-  // {
-  //   return this.userService.findAllUsers(getUserParamDto, limit, page);
-  // }
+
+
+  @Get(':id')
+  @ApiOperation({
+    summary: "Fetches a specific user by UUID"
+  })
+  @ApiResponse({
+    status:200,
+    description: "User found."
+  })
+  @ApiParam({
+    name: "id",
+    example: "7aa02917-e3b5-4e83-9849-352f0c8dff2e"
+  })
+  public getUserById(@Param() params: GetUsersParamDto)
+  {
+    return this.userService.getUserById(params.id)
+  }
+
 
   @Post()
   @ApiOperation({
