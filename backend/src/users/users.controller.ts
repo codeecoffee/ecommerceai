@@ -1,9 +1,24 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user-param.dto';
 import { GetUsersParamDto } from './dto/get-user-param.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags, } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
 
 @Controller('users')
@@ -35,7 +50,7 @@ export class UsersController {
     example: 1,
   })
   public getUsers(@Query() query: GetUsersQueryDto) {
-    return this.userService.getUsers(query.page, query.limit);
+    return this.userService.getUsers(query);
   }
 
   @Get(':id')
@@ -87,6 +102,6 @@ export class UsersController {
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
   public async deleteUser(@Param() params: GetUsersParamDto) {
-    return this.userService.deleteUser(params.id);
+    return await this.userService.deleteUser(params.id);
   }
 }
