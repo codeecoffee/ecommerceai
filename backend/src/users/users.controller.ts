@@ -10,12 +10,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user-param.dto';
-import { GetUsersParamDto } from './dto/get-user-param.dto';
-import { PatchUserDTO } from './dto/patch-user.dto';
-import { UsersService } from './providers/users.service';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
+import { GetUsersParamDto } from './dto/get-user-param.dto';
+import { PatchUserDTO } from './dto/patch-user.dto';
+import { CreateUserDto } from './dto/create-user-param.dto';
+import { UsersService } from './providers/users.service';
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
@@ -37,7 +37,7 @@ export class UsersController {
     description: 'number of entries returned per query',
     example: 10
   })
-    @ApiQuery({
+  @ApiQuery({
     name: 'page',
     type: 'number',
     required: false,
@@ -45,7 +45,7 @@ export class UsersController {
     example: 1
   })
   public getUsers(@Query() query: GetUsersQueryDto){
-    return this.userService.getUsers(query.page, query.limit)
+    return this.userService.getUsers(query)
   }
 
 
