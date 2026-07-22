@@ -1,7 +1,7 @@
 import { Controller, DefaultValuePipe, Get, Param, Post, Query, Body, ParseIntPipe } from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { CreatePostDto } from './dto/create-post-param.dto';
-import { GetPostsParamDto } from './dto/get-posts-param.dto';
+
 
 @Controller('posts')
 export class PostsController {

@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -83,10 +84,11 @@ export class UsersController {
 
   @Patch(':id')
   public patchUser(
-    @Body() patchUserDto: PatchUserDTO,
+    @Body() updateUserDto: UpdateUserDto,
     @Param() params: GetUsersParamDto,
-  ) {
-    return this.userService.updateUser(params.id, patchUserDto);
+  ) 
+  {
+    return this.userService.updateUser(params.id, updateUserDto);
   }
 
   @Delete()
