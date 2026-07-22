@@ -1,19 +1,27 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { UsersService } from '../../users/providers/users.service';
+import { AuthDto } from '../dto/auth.dto';
 
 @Injectable()
 export class AuthService {
-    
-    constructor(@ Inject(forwardRef(()=>UsersService))private readonly usersService: UsersService) {}
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+  ) {}
 
-    public login(email: string, password: string, id: number) {
-        //const user = this.usersService.findUserById(id);
-        const user = 'John'
-        return {token: 'jwt-token', user};
-    }
-    public isAuthenticated(token: string):boolean {
+  public login(email: string, password: string, id: number) {
+    //const user = this.usersService.findUserById(id);
+    const user = 'John';
+    return { token: 'jwt-token', user };
+  }
+  public isAuthenticated(token: string): boolean {
+    return true;
+  }
+  public signupLocal(dto: AuthDto) {}
 
-        return true;
-    }
+  public signinLocal() {}
 
+  public logout() {}
+
+  public refreshTokens() {}
 }
