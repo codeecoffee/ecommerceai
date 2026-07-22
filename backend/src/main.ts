@@ -1,6 +1,6 @@
 import 'dotenv/config'
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from './app.module';
 async function bootstrap() {
@@ -12,7 +12,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
+  //this allows @Expose() / @Exclude() in resp dtos to work
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));  
+  // main.ts (global) or per-controller
   /** 
    * Swagger config
    * 

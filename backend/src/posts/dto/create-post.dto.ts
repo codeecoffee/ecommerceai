@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString, IsUUID, Max, MaxLength, Min, MinLength } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength } from "class-validator";
 
 export class CreatePostDto{
 
@@ -22,7 +22,7 @@ export class CreatePostDto{
     title!: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     @MinLength(5)
     @MaxLength(250)
     comment?: string;

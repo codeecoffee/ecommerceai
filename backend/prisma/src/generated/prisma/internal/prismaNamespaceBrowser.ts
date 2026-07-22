@@ -162,7 +162,8 @@ export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeo
 export const PostScalarFieldEnum = {
   post_id: 'post_id',
   author_id: 'author_id',
-  raiting: 'raiting',
+  title: 'title',
+  rating: 'rating',
   comment: 'comment',
   product_id: 'product_id',
   created_at: 'created_at',
