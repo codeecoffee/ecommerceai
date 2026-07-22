@@ -1,0 +1,69 @@
+[
+  {
+    "authorId": "3bcf4beb-4fe5-4f51-b927-6cd0b0d2a4a2",
+    "rating": 1,
+    "title": "Fast shipping!",
+    "productId": "133cc55a-7e14-405f-8bda-b7570aa0d6e9",
+    "comment": "Arrived earlier than expected and packaging was solid."
+  },
+  {
+    "authorId": "1bbbc081-2d20-407f-9938-963a5aff4054",
+    "rating": 1,
+    "title": "Great quality product",
+    "productId": "bd9cd299-52c4-4de6-a121-0d2d113201d5"
+  },
+  {
+    "authorId": "22ccef7d-6879-4a5f-83d1-2692a0160647",
+    "rating": 3,
+    "title": "Not what I expected",
+    "productId": "c53afb38-0d73-44ae-83dd-27f521989ca6",
+    "comment": "The material feels a bit cheaper than shown in photos."
+  },
+  {
+    "authorId": "356e5d31-0c66-4aad-b338-b41caf0f01de",
+    "rating": 2,
+    "title": "Highly recommend this",
+    "productId": "da3d33e5-9f04-4625-8c75-580918c453b5",
+    "comment": "Been using it daily for two weeks, holding up great so far."
+  },
+  {
+    "authorId": "d378ff93-50a4-45c1-93ec-067da80c98dd",
+    "rating": 2,
+    "title": "Works as advertised",
+    "productId": "a341fef8-6b4f-4b19-bf0b-928e16d1b8d6"
+  },
+  {
+    "authorId": "71b16db4-c08b-45f1-a0cf-1e3d903c3fdd",
+    "rating": 2,
+    "title": "Could be better honestly",
+    "productId": "7b4019b2-3922-4476-abaf-0edcb42cae96",
+    "comment": "Customer service was responsive when I had questions."
+  },
+  {
+    "authorId": "a3504067-b09f-4a69-82d3-30be7a62577c",
+    "rating": 1,
+    "title": "Exceeded my expectations",
+    "productId": "0d318481-f847-4b39-8106-6e705d50e825",
+    "comment": "Exactly matches the description, very happy with purchase."
+  },
+  {
+    "authorId": "927de98f-b365-4ccf-b9dc-5de61e6d4e45",
+    "rating": 5,
+    "title": "Decent for the price",
+    "productId": "f65836bd-af01-41a9-9dd7-ec56cd2c3d90"
+  },
+  {
+    "authorId": "da8a720b-af21-4a58-847d-0c326535e1e5",
+    "rating": 1,
+    "title": "Will buy again soon",
+    "productId": "1ce70858-28ac-4c22-bc70-730d4cf06595",
+    "comment": "Would have liked more color options but overall satisfied."
+  },
+  {
+    "authorId": "78980332-0f12-43f0-8040-8f9b4b9f2da9",
+    "rating": 5,
+    "title": "Perfect gift idea",
+    "productId": "94c67e3a-610d-4e7c-a30b-cf09f5c78751",
+    "comment": "Bought this for a friend and they loved it immediately."
+  }
+]

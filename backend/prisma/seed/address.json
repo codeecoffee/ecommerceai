@@ -1,0 +1,42 @@
+[
+  {
+    "addressId": "974aec74-1be5-451c-bea5-29c95fa36aab",
+    "street": "482 Tillman Shore",
+    "city": "Austin",
+    "state": "TX",
+    "postalCode": "73301",
+    "country": "United States"
+  },
+  {
+    "addressId": "4b6afafc-3085-47df-920c-d6dd3a0ff2cd",
+    "street": "1290 Lesch Road",
+    "city": "Denver",
+    "state": "CO",
+    "postalCode": "80202",
+    "country": "United States"
+  },
+  {
+    "addressId": "d8386f8d-47e0-4acc-8654-e68de89e0544",
+    "street": "55 Marvin Parkway",
+    "city": "Lisbon",
+    "state": "Lisbon",
+    "postalCode": "1000-001",
+    "country": "Portugal"
+  },
+  {
+    "addressId": "3f6e2f5e-7d0e-4b3c-9a4a-8c1d6a2b9f10",
+    "street": "77 Rua das Flores",
+    "city": "Sao Paulo",
+    "state": "SP",
+    "postalCode": "01310-000",
+    "country": "Brazil"
+  },
+  {
+    "addressId": "b1c9d7e4-2a5f-4e6b-9c3d-1f0a8e7b6d21",
+    "street": "14 Baker Street",
+    "city": "London",
+    "state": "England",
+    "postalCode": "NW1 6XE",
+    "country": "United Kingdom"
+  }
+]

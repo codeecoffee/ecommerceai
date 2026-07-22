@@ -14,7 +14,7 @@ export class PostsController {
     constructor(private readonly postsService: PostsService) {}
 
     @ApiOperation({
-        summary: "Creates a new post written by the logged in User",
+        summary: "Creates a new post written by the logged in User"
     })
     @ApiBody({ type: CreatePostDto })
     @ApiResponse({
@@ -37,8 +37,9 @@ export class PostsController {
         isArray: true
     })
     @ApiParam({
-        name: 'id',
+        name: 'author_id',
         example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
+    
     })
     @Get(':userId/posts')
     public getPostsByUser(@Param() params: GetUserPostsParamDto){
@@ -54,8 +55,9 @@ export class PostsController {
         type: PostResponseDto
     })
     @ApiParam({
-        name: 'id',
+        name: 'post_id',
         example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
+   
     })
     @Get(':postId')
     public getPost(@Param() params: GetPostParamDto){

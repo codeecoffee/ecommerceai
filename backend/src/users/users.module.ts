@@ -7,8 +7,8 @@ import { UsersMapper } from './providers/users.mapper';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UsersMapper],
   exports: [UsersService],
-  imports: [forwardRef(() => AuthModule), HashingModule, UsersMapper],
+  imports: [forwardRef(() => AuthModule), HashingModule],
 })
 export class UsersModule {}

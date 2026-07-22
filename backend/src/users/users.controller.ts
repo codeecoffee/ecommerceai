@@ -29,6 +29,19 @@ import { UserResponseDto } from './dto/user-response.dto';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
+  
+  @ApiOperation({
+    summary: 'Creates a new User',
+  })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+  })
+  @Post()
+  public createUser(@Body() createUserInput: CreateUserDto) {
+    return this.userService.createUser(createUserInput);
+  }
  
   @ApiOperation({
     summary: 'Fetches a list of registered users on the application',
@@ -72,19 +85,6 @@ export class UsersController {
   @Get(':id')
   public getUserById(@Param() params: GetUsersParamDto) {
     return this.userService.getUserById(params.id);
-  }
-
-  @ApiOperation({
-    summary: 'Creates a new User',
-  })
-  @ApiBody({ type: CreateUserDto })
-  @ApiResponse({
-    status: 201,
-    description: 'User created successfully',
-  })
-  @Post()
-  public createUser(@Body() createUserInput: CreateUserDto) {
-    return this.userService.createUser(createUserInput);
   }
 
   @ApiOperation({summary: 'patches a specific user'})
