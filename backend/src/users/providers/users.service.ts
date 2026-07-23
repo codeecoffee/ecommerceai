@@ -62,6 +62,10 @@ export class UsersService {
     return await this.dbService.user.findUnique({ where: { id } });
   }
 
+  public async getUserByEmail(email:string){
+    return await this.dbService.user.findFirst({where:{ email }})
+  }
+
   public async updateUser(id: string, dto: UpdateUserDto) {
     const data: Prisma.UserUncheckedUpdateInput = this.userMapper.mapCommonFields(dto);
     return await this.dbService.user.update({

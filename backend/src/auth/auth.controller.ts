@@ -7,12 +7,14 @@ export class AuthController {
     constructor(private readonly authService: AuthService){}
 
     //login with email and password
-    @Post('/local/signup')
-    public signupLocal(@Body()dto: AuthDto){}
+
     
 
-    @Post('/local/signin')
-    public signinLocal(){}
+    @Post('signin')
+    public signinLocal(@Body() authDto: AuthDto)
+    {
+
+    }
     
     @Post('/logout')
     public logout(){}

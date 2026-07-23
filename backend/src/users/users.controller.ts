@@ -13,7 +13,7 @@ import { GetUsersParamDto } from './dto/get-user-param.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
 import {
-    ApiBody,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiQuery,
