@@ -7,7 +7,7 @@ export class AuthDto{
     @IsNotEmpty()
     email!: string;
 
-    @ApiProperty({example: 'Test123454!'})
+    @ApiProperty({example: '12345678Admin!'})
     @IsString()
     @IsNotEmpty()
     @MinLength(8)

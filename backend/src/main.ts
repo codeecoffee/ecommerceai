@@ -26,9 +26,24 @@ async function bootstrap() {
  .setLicense('MIT LICENSE', 'https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt')
  .setVersion('1.0')
  .addServer('http://localhost:3000')
+ .addBearerAuth(
+  {
+    type: 'http',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
+    name: 'JWT',
+    description: 'Enter JWT token',
+    in: 'header'
+  },
+  'access-token'
+ )
  .build()
  const doc = SwaggerModule.createDocument(app, config)
- SwaggerModule.setup('documentation',app, doc)
+ SwaggerModule.setup('documentation',app, doc,{
+  swaggerOptions: {
+    persistAuthorization: true, //keeps you logged in across page refreshes
+  }
+ })
 
   await app.listen(process.env.PORT ?? 3000);
 }

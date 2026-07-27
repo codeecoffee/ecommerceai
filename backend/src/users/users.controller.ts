@@ -13,6 +13,7 @@ import { GetUsersParamDto } from './dto/get-user-param.dto';
 import { PatchUserDTO } from './dto/patch-user.dto';
 import { UsersService } from './providers/users.service';
 import {
+    ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -23,6 +24,7 @@ import {
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('users')
 @ApiTags('Users')
@@ -38,6 +40,7 @@ export class UsersController {
     status: 201,
     description: 'User created successfully',
   })
+  @Public()
   @Post()
   public createUser(@Body() createUserInput: CreateUserDto) {
     return this.userService.createUser(createUserInput);
@@ -65,6 +68,7 @@ export class UsersController {
       'The position of the page number that you want the api to return ',
     example: 1,
   })
+  @ApiBearerAuth('access-token')
   @Get()
   public getUsers(@Query() query: GetUsersQueryDto) {
     return this.userService.getUsers(query);
