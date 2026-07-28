@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user-param.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersParamDto } from './dto/get-user-param.dto';
 import { UsersService } from './providers/users.service';
 import {
@@ -23,7 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
+import { UserResponseDto } from './dto/response-user.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { OwnershipOrAdminGuard } from '../auth/guards/ownership-or-admin.guard';
 import { OptionalAdminGuard } from '../auth/guards/optional-admin.guard';

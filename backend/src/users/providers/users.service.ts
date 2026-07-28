@@ -9,11 +9,11 @@ import {
 import { Prisma, Role } from '../../../prisma/src/generated/prisma/client';
 import { AuthService } from '../../auth/providers/auth.service';
 import { DatabaseService } from '../../database/providers/database.service';
-import { CreateUserDto } from '../dto/create-user-param.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { HashingService } from '../../common/hashing/providers/hashing.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { GetUsersQueryDto } from '../dto/get-users-query.dto';
-import { UsersMapper } from './users.mapper';
+import { UsersMapper } from '../mappers/users.mapper';
 
 @Injectable()
 export class UsersService {
