@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './providers/auth.service';
 import { AuthDto } from './dto/auth.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { CurrentUser } from './decorators/current-user.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -19,10 +21,20 @@ export class AuthController {
         return this.authService.login(authDto)
     }
     
-    @Post('/logout')
-    public logout(){}
+    @Public()
+    @Post('refresh')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Exchange a refresh token for a new token pair' })
+    public refresh(@Body() dto: RefreshTokenDto) {
+    return this.authService.refresh(dto);
+    }
 
-    @Post('/refresh')
-    public refreshTokens(){}
+    @Post('logout')
+    @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth('access-token')
+    @ApiOperation({ summary: 'Revoke the current refresh token' })
+    public logout(@CurrentUser() user: any, @Body() dto: RefreshTokenDto) {
+    return this.authService.logout(user.id, dto);
+    }
 
 }
