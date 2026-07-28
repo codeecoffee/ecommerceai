@@ -95,6 +95,11 @@ export type Purchase_history = Prisma.Purchase_historyModel
  */
 export type Recommendation = Prisma.RecommendationModel
 /**
+ * Model RefreshToken
+ * 
+ */
+export type RefreshToken = Prisma.RefreshTokenModel
+/**
  * Model User
  * 
  */

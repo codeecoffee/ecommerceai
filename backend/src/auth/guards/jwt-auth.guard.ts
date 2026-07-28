@@ -18,11 +18,11 @@ export class JwtAuthGuard extends AuthGuard('jwt'){
         return super.canActivate(context)
     }
 
-    handleRequest(err: any, user: any, info: any) {
-        console.log('JWT Guard Debug →', { err, user, info });
-        if (err || !user) {
-        throw err || new UnauthorizedException(info?.message || 'Unauthorized');
-        }
-        return user;
-    }
+    // handleRequest(err: any, user: any, info: any) {
+    //     console.log('JWT Guard Debug →', { err, user, info });
+    //     if (err || !user) {
+    //     throw err || new UnauthorizedException(info?.message || 'Unauthorized');
+    //     }
+    //     return user;
+    // }
 }

@@ -228,6 +228,7 @@ export type UserWhereInput = {
   carts?: Prisma.CartListRelationFilter
   purchase_hist?: Prisma.Purchase_historyListRelationFilter
   recommendations?: Prisma.RecommendationListRelationFilter
+  refresh_tokens?: Prisma.RefreshTokenListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -247,6 +248,7 @@ export type UserOrderByWithRelationInput = {
   carts?: Prisma.CartOrderByRelationAggregateInput
   purchase_hist?: Prisma.Purchase_historyOrderByRelationAggregateInput
   recommendations?: Prisma.RecommendationOrderByRelationAggregateInput
+  refresh_tokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -269,6 +271,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   carts?: Prisma.CartListRelationFilter
   purchase_hist?: Prisma.Purchase_historyListRelationFilter
   recommendations?: Prisma.RecommendationListRelationFilter
+  refresh_tokens?: Prisma.RefreshTokenListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -319,6 +322,7 @@ export type UserCreateInput = {
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -337,6 +341,7 @@ export type UserUncheckedCreateInput = {
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -355,6 +360,7 @@ export type UserUpdateInput = {
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -373,6 +379,7 @@ export type UserUncheckedUpdateInput = {
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -579,6 +586,20 @@ export type UserUpdateOneRequiredWithoutRecommendationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecommendationsInput, Prisma.UserUpdateWithoutRecommendationsInput>, Prisma.UserUncheckedUpdateWithoutRecommendationsInput>
 }
 
+export type UserCreateNestedOneWithoutRefresh_tokensInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRefresh_tokensInput, Prisma.UserUncheckedCreateWithoutRefresh_tokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefresh_tokensInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRefresh_tokensNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRefresh_tokensInput, Prisma.UserUncheckedCreateWithoutRefresh_tokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefresh_tokensInput
+  upsert?: Prisma.UserUpsertWithoutRefresh_tokensInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRefresh_tokensInput, Prisma.UserUpdateWithoutRefresh_tokensInput>, Prisma.UserUncheckedUpdateWithoutRefresh_tokensInput>
+}
+
 export type EnumRoleFieldUpdateOperationsInput = {
   set?: $Enums.Role
 }
@@ -598,6 +619,7 @@ export type UserCreateWithoutAddressInput = {
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAddressInput = {
@@ -615,6 +637,7 @@ export type UserUncheckedCreateWithoutAddressInput = {
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAddressInput = {
@@ -674,6 +697,7 @@ export type UserCreateWithoutCartsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCartsInput = {
@@ -691,6 +715,7 @@ export type UserUncheckedCreateWithoutCartsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCartsInput = {
@@ -724,6 +749,7 @@ export type UserUpdateWithoutCartsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCartsInput = {
@@ -741,6 +767,7 @@ export type UserUncheckedUpdateWithoutCartsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -758,6 +785,7 @@ export type UserCreateWithoutOrdersInput = {
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -775,6 +803,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -808,6 +837,7 @@ export type UserUpdateWithoutOrdersInput = {
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -825,6 +855,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPostsInput = {
@@ -842,6 +873,7 @@ export type UserCreateWithoutPostsInput = {
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPostsInput = {
@@ -859,6 +891,7 @@ export type UserUncheckedCreateWithoutPostsInput = {
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPostsInput = {
@@ -892,6 +925,7 @@ export type UserUpdateWithoutPostsInput = {
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPostsInput = {
@@ -909,6 +943,7 @@ export type UserUncheckedUpdateWithoutPostsInput = {
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPurchase_histInput = {
@@ -926,6 +961,7 @@ export type UserCreateWithoutPurchase_histInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPurchase_histInput = {
@@ -943,6 +979,7 @@ export type UserUncheckedCreateWithoutPurchase_histInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPurchase_histInput = {
@@ -976,6 +1013,7 @@ export type UserUpdateWithoutPurchase_histInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPurchase_histInput = {
@@ -993,6 +1031,7 @@ export type UserUncheckedUpdateWithoutPurchase_histInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRecommendationsInput = {
@@ -1010,6 +1049,7 @@ export type UserCreateWithoutRecommendationsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   carts?: Prisma.CartCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRecommendationsInput = {
@@ -1027,6 +1067,7 @@ export type UserUncheckedCreateWithoutRecommendationsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
   purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRecommendationsInput = {
@@ -1060,6 +1101,7 @@ export type UserUpdateWithoutRecommendationsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecommendationsInput = {
@@ -1077,6 +1119,95 @@ export type UserUncheckedUpdateWithoutRecommendationsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRefresh_tokensInput = {
+  id?: string
+  first_name: string
+  last_name: string
+  photo_url?: string | null
+  email: string
+  role?: $Enums.Role
+  password_hash: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  address?: Prisma.AddressCreateNestedOneWithoutUsersInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  carts?: Prisma.CartCreateNestedManyWithoutUserInput
+  purchase_hist?: Prisma.Purchase_historyCreateNestedManyWithoutUserInput
+  recommendations?: Prisma.RecommendationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRefresh_tokensInput = {
+  id?: string
+  first_name: string
+  last_name: string
+  photo_url?: string | null
+  email: string
+  address_id?: string | null
+  role?: $Enums.Role
+  password_hash: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  carts?: Prisma.CartUncheckedCreateNestedManyWithoutUserInput
+  purchase_hist?: Prisma.Purchase_historyUncheckedCreateNestedManyWithoutUserInput
+  recommendations?: Prisma.RecommendationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRefresh_tokensInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRefresh_tokensInput, Prisma.UserUncheckedCreateWithoutRefresh_tokensInput>
+}
+
+export type UserUpsertWithoutRefresh_tokensInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRefresh_tokensInput, Prisma.UserUncheckedUpdateWithoutRefresh_tokensInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRefresh_tokensInput, Prisma.UserUncheckedCreateWithoutRefresh_tokensInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRefresh_tokensInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRefresh_tokensInput, Prisma.UserUncheckedUpdateWithoutRefresh_tokensInput>
+}
+
+export type UserUpdateWithoutRefresh_tokensInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  first_name?: Prisma.StringFieldUpdateOperationsInput | string
+  last_name?: Prisma.StringFieldUpdateOperationsInput | string
+  photo_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  address?: Prisma.AddressUpdateOneWithoutUsersNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  carts?: Prisma.CartUpdateManyWithoutUserNestedInput
+  purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
+  recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  first_name?: Prisma.StringFieldUpdateOperationsInput | string
+  last_name?: Prisma.StringFieldUpdateOperationsInput | string
+  photo_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  address_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  password_hash?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
+  purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
+  recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyAddressInput = {
@@ -1106,6 +1237,7 @@ export type UserUpdateWithoutAddressInput = {
   carts?: Prisma.CartUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAddressInput = {
@@ -1123,6 +1255,7 @@ export type UserUncheckedUpdateWithoutAddressInput = {
   carts?: Prisma.CartUncheckedUpdateManyWithoutUserNestedInput
   purchase_hist?: Prisma.Purchase_historyUncheckedUpdateManyWithoutUserNestedInput
   recommendations?: Prisma.RecommendationUncheckedUpdateManyWithoutUserNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutAddressInput = {
@@ -1148,6 +1281,7 @@ export type UserCountOutputType = {
   carts: number
   purchase_hist: number
   recommendations: number
+  refresh_tokens: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1156,6 +1290,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   carts?: boolean | UserCountOutputTypeCountCartsArgs
   purchase_hist?: boolean | UserCountOutputTypeCountPurchase_histArgs
   recommendations?: boolean | UserCountOutputTypeCountRecommendationsArgs
+  refresh_tokens?: boolean | UserCountOutputTypeCountRefresh_tokensArgs
 }
 
 /**
@@ -1203,6 +1338,13 @@ export type UserCountOutputTypeCountRecommendationsArgs<ExtArgs extends runtime.
   where?: Prisma.RecommendationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRefresh_tokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RefreshTokenWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1221,6 +1363,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   carts?: boolean | Prisma.User$cartsArgs<ExtArgs>
   purchase_hist?: boolean | Prisma.User$purchase_histArgs<ExtArgs>
   recommendations?: boolean | Prisma.User$recommendationsArgs<ExtArgs>
+  refresh_tokens?: boolean | Prisma.User$refresh_tokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1273,6 +1416,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   carts?: boolean | Prisma.User$cartsArgs<ExtArgs>
   purchase_hist?: boolean | Prisma.User$purchase_histArgs<ExtArgs>
   recommendations?: boolean | Prisma.User$recommendationsArgs<ExtArgs>
+  refresh_tokens?: boolean | Prisma.User$refresh_tokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1291,6 +1435,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     carts: Prisma.$CartPayload<ExtArgs>[]
     purchase_hist: Prisma.$Purchase_historyPayload<ExtArgs>[]
     recommendations: Prisma.$RecommendationPayload<ExtArgs>[]
+    refresh_tokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1703,6 +1848,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   carts<T extends Prisma.User$cartsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cartsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CartPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchase_hist<T extends Prisma.User$purchase_histArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$purchase_histArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$Purchase_historyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recommendations<T extends Prisma.User$recommendationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recommendationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecommendationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  refresh_tokens<T extends Prisma.User$refresh_tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2279,6 +2425,30 @@ export type User$recommendationsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.RecommendationScalarFieldEnum | Prisma.RecommendationScalarFieldEnum[]
+}
+
+/**
+ * User.refresh_tokens
+ */
+export type User$refresh_tokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RefreshToken
+   */
+  select?: Prisma.RefreshTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RefreshToken
+   */
+  omit?: Prisma.RefreshTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RefreshTokenInclude<ExtArgs> | null
+  where?: Prisma.RefreshTokenWhereInput
+  orderBy?: Prisma.RefreshTokenOrderByWithRelationInput | Prisma.RefreshTokenOrderByWithRelationInput[]
+  cursor?: Prisma.RefreshTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RefreshTokenScalarFieldEnum | Prisma.RefreshTokenScalarFieldEnum[]
 }
 
 /**

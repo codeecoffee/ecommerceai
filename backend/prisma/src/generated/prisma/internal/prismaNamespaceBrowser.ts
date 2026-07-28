@@ -62,6 +62,7 @@ export const ModelName = {
   Product: 'Product',
   Purchase_history: 'Purchase_history',
   Recommendation: 'Recommendation',
+  RefreshToken: 'RefreshToken',
   User: 'User'
 } as const
 
@@ -214,6 +215,17 @@ export const RecommendationScalarFieldEnum = {
 } as const
 
 export type RecommendationScalarFieldEnum = (typeof RecommendationScalarFieldEnum)[keyof typeof RecommendationScalarFieldEnum]
+
+
+export const RefreshTokenScalarFieldEnum = {
+  id: 'id',
+  token_hash: 'token_hash',
+  user_id: 'user_id',
+  expires_at: 'expires_at',
+  created_at: 'created_at'
+} as const
+
+export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

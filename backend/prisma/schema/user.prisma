@@ -14,6 +14,7 @@ model User {
   carts           Cart[]
   purchase_hist   Purchase_history[]
   recommendations Recommendation[]
+  refresh_tokens  RefreshToken[]
   created_at      DateTime           @default(now())
   updated_at      DateTime           @updatedAt
 }

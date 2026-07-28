@@ -1,7 +1,9 @@
 import {
+    ConflictException,
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, Role } from '../../../prisma/src/generated/prisma/client';
@@ -28,15 +30,23 @@ export class UsersService {
       ...this.userMapper.mapCommonFields(dto),
       password_hash: await this.hashingService.hash(dto.password),
     };
-    return this.dbService.user.create({ data });
+
+    try {
+      return await this.dbService.user.create({ data });
+
+    } catch(error){
+      if(
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ){
+        throw new ConflictException('A user with this email already exists')
+      }
+      throw new InternalServerErrorException(' Something went wrong creating the user')
+    }
+
   }
 
-  //!TODO: include auth
   public async getUsers(query: GetUsersQueryDto) {
-    // const isAuthenticated = this.authService.isAuthenticated('jwt-token');
-    // if (!isAuthenticated) {
-    //     throw new Error('Unauthorized');
-    // }
     const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
     const [users, total] = await Promise.all([
