@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
+import { Expose } from "class-transformer";
 
 export class ResponseAddressDto {
     @ApiProperty({description: 'Address Id'})

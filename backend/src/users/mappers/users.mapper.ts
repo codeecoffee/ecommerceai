@@ -1,51 +1,42 @@
-import { Injectable } from "@nestjs/common";
 import { CreateUserDto } from "../dto/create-user.dto";
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma, User } from '../../../prisma/src/generated/prisma/client';
 import { UpdateUserDto } from "../dto/update-user.dto";
+import { UserResponseDto } from "../dto/response-user.dto"
 
-@Injectable()
 export class UsersMapper{
-    mapCommonFields(
-    dto: CreateUserDto,
-  ): Required<
-    Pick<
-      Prisma.UserUncheckedCreateInput,
-      'first_name' | 'last_name' | 'email' | 'photo_url' | 'address_id' >
-  >;
-
-    mapCommonFields(
-    dto: UpdateUserDto,
-  ): Partial<
-    Pick<
-      Prisma.UserUncheckedUpdateInput,
-      'first_name' | 'last_name' | 'email' | 'photo_url' | 'address_id' >
-  >;
-  mapCommonFields(
-    dto: CreateUserDto | UpdateUserDto,
-  ):
-    | Pick<
-        Prisma.UserUncheckedCreateInput,
-        | 'first_name'
-        | 'last_name'
-        | 'email'
-        | 'photo_url'
-        | 'address_id'
-      >
-    | Pick<
-        Prisma.UserUncheckedUpdateInput,
-        | 'first_name'
-        | 'last_name'
-        | 'email'
-        | 'photo_url'
-        | 'address_id'
-      > {
+static toCreateInput(dto: CreateUserDto): Omit<Prisma.UserUncheckedCreateInput, 'password_hash'> {
     return {
       first_name: dto.firstName,
       last_name: dto.lastName,
       email: dto.email,
       photo_url: dto.photoUrl,
       address_id: dto.addressId,
+      role: dto.role,
     };
+  }
+
+  static toUpdateInput(dto: UpdateUserDto): Prisma.UserUncheckedUpdateInput {
+    return {
+      ...(dto.firstName !== undefined && { first_name: dto.firstName }),
+      ...(dto.lastName !== undefined && { last_name: dto.lastName }),
+      ...(dto.email !== undefined && { email: dto.email }),
+      ...(dto.photoUrl !== undefined && { photo_url: dto.photoUrl }),
+      ...(dto.addressId !== undefined && { address_id: dto.addressId })
+    };
+  }
+  
+   static toResponseDto(user: User): UserResponseDto{
+    return {
+      id: user.id,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      photoUrl: user.photo_url,
+      addressId: user.address_id,
+      role: user.role,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at
+    }
   }
 }
 

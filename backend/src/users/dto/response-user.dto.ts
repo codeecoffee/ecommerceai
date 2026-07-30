@@ -8,11 +8,11 @@ export class UserResponseDto{
     
     @ApiProperty({description: 'Users first name'})
     @Expose()
-    first_name!: string;
+    firstName!: string;
 
     @ApiProperty({description: 'Users last name'})
     @Expose()
-    last_name!: string;
+    lastName!: string;
     
     @ApiProperty({description: 'Users email'})
     @Expose()
@@ -20,11 +20,11 @@ export class UserResponseDto{
     
     @ApiProperty({description: 'Users photo Url'})
     @Expose()
-    photo_url!: string;
+    photoUrl!: string | null;
     
     @ApiProperty({description: 'Users address UUID'})
     @Expose()
-    address_id!: string;
+    addressId!: string | null;
     
     @ApiProperty({description: 'User Role', example: "USER | ADMIN"})
     @Expose()
@@ -38,6 +38,4 @@ export class UserResponseDto{
     @Expose()
     updatedAt!: Date;
 
-    @Exclude()
-    password_hash!: string;
 }

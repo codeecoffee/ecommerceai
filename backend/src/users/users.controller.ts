@@ -15,6 +15,7 @@ import { UsersService } from './providers/users.service';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -47,8 +48,8 @@ export class UsersController {
   @Public()
   @UseGuards(OptionalAdminGuard)
   @ApiBearerAuth('access-token')
-  public createUser(@Body() createUserInput: CreateUserDto) {
-    const user = this.userService.createUser(createUserInput);
+  public async createUser(@Body() createUserInput: CreateUserDto) {
+    const user = await this.userService.createUser(createUserInput);
     return plainToInstance(UserResponseDto, user, {
       excludeExtraneousValues: true
     })
@@ -87,10 +88,11 @@ export class UsersController {
   @Get(':id')
   @ApiOperation({ summary: 'Fetches a specific user by UUID' })
   @ApiResponse({
-    status: 200,
+    status: 404,
     description: 'User found.',
     type: UserResponseDto,
   })
+  @ApiOkResponse({ type: UserResponseDto })
   @ApiParam({
     name: 'id',
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
@@ -103,7 +105,11 @@ export class UsersController {
 
   @Patch(':id/role')
   @ApiOperation({ summary: 'Admin is able to change an user role' })
-  @ApiResponse({ status: 204, description: 'No Content' })
+    @ApiResponse({ 
+    status: 200, 
+    description: 'User updated', 
+    type: UserResponseDto 
+  })
   @ApiParam({
     name: 'id',
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
@@ -120,9 +126,10 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'patches a specific user' })
-  @ApiResponse({
-    status: 204,
-    description: 'No content',
+  @ApiResponse({ 
+    status: 200, 
+    description: 'User updated', 
+    type: UserResponseDto 
   })
   @ApiParam({
     name: 'id',
