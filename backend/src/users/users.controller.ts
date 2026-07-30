@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUsersParamDto } from './dto/get-user-param.dto';
+import { GetUserParamDto } from './dto/get-user-param.dto';
 import { UsersService } from './providers/users.service';
 import {
   ApiBearerAuth,
@@ -31,7 +31,7 @@ import { OptionalAdminGuard } from '../auth/guards/optional-admin.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
-import { plainToInstance } from 'class-transformer';
+
 
 @Controller('users')
 @ApiTags('Users')
@@ -39,15 +39,13 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Creates a new User' })
+  @ApiOperation({ summary: 'Public: Creates a new User' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 201,
     description: 'User created successfully',
   })
   @Public()
-  @UseGuards(OptionalAdminGuard)
-  @ApiBearerAuth('access-token')
   public createUser(@Body() createUserInput: CreateUserDto) {
     return this.userService.createUser(createUserInput);
   }
@@ -86,8 +84,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Fetches a specific user by UUID' })
   @ApiResponse({
     status: 404,
-    description: 'User found.',
-    type: UserResponseDto,
+    description: 'User not found.',
+
   })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiParam({
@@ -96,7 +94,7 @@ export class UsersController {
   })
   @ApiBearerAuth('access-token')
   @UseGuards(OwnershipOrAdminGuard)
-  public getUserById(@Param() params: GetUsersParamDto) {
+  public getUserById(@Param() params: GetUserParamDto) {
     return this.userService.getUserById(params.id);
   }
 
@@ -114,8 +112,9 @@ export class UsersController {
   @ApiBody({ type: UpdateUserRoleDto })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBearerAuth('access-token')
   public patchUserRole(
-    @Param() params: GetUsersParamDto,
+    @Param() params: GetUserParamDto,
     @Body() updateRoleDto: UpdateUserRoleDto,
   ) {
     return this.userService.updateUserRole(params.id, updateRoleDto.role);
@@ -123,8 +122,7 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'patches a specific user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOkResponse({  
     description: 'User updated', 
     type: UserResponseDto 
   })
@@ -134,9 +132,10 @@ export class UsersController {
   })
   @ApiBody({ type: UpdateUserDto })
   @UseGuards(OwnershipOrAdminGuard)
+  @ApiBearerAuth('access-token')
   public patchUser(
     @Body() updateUserDto: UpdateUserDto,
-    @Param() params: GetUsersParamDto,
+    @Param() params: GetUserParamDto,
   ) {
     return this.userService.updateUser(params.id, updateUserDto);
   }
@@ -153,7 +152,8 @@ export class UsersController {
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
   @UseGuards(OwnershipOrAdminGuard) //Admin can delete an account and user can delete their own account
-  public deleteUser(@Param('id') params: GetUsersParamDto) {
+  @ApiBearerAuth('access-auth')
+  public deleteUser(@Param('id') params: GetUserParamDto) {
     return this.userService.deleteUser(params.id);
   }
 
@@ -168,8 +168,9 @@ export class UsersController {
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
   @UseGuards(OwnershipOrAdminGuard) 
+  @ApiBearerAuth('access-token')
   public removeMyAddress(
-    @Param() params: GetUsersParamDto
+    @Param() params: GetUserParamDto
   ){
     return this.userService.removeUserAddress(params.id)
   }

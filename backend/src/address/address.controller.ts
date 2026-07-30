@@ -10,7 +10,6 @@ import { ResponseAddressDto } from './dto/response-address.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetAddressParamDto } from './dto/get-address-param.dto';
-import { GetUsersParamDto } from '../users/dto/get-user-param.dto';
 import { CheckOwnership } from '../auth/decorators/check-ownership.decorator';
 
 @Controller('address')
@@ -19,7 +18,7 @@ export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Creates a new User' })
+  @ApiOperation({ summary: 'Creates a new Address' })
   @ApiBody({ type: CreateAddressDto })
   @ApiResponse({
     status: 201,

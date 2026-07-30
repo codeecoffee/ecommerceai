@@ -20,7 +20,7 @@ export class AuthService {
     private readonly configService: ConfigService
   ) {}
 
-  private async issueToken(payload: JwtPayload){
+  public async issueToken(payload: JwtPayload){
     const access_token = this.jwtService.sign(payload,{
       secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: Number(this.configService.get<string>('JWT_EXPIRES_IN', '3600'))

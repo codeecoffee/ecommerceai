@@ -6,7 +6,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, Role, User } from '../../../prisma/src/generated/prisma/client';
+import {
+  Prisma,
+  Role,
+  User,
+} from '../../../prisma/src/generated/prisma/client';
 import { AuthService } from '../../auth/providers/auth.service';
 import { DatabaseService } from '../../database/providers/database.service';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -22,20 +26,27 @@ import { AddressService } from '../../address/providers/address.service';
 export class UsersService {
   constructor(
     @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
     private readonly dbService: DatabaseService,
     private readonly hashingService: HashingService,
     private readonly addressService: AddressService,
   ) {}
 
-  public async createUser(dto: CreateUserDto): Promise<UserResponseDto> {
+  public async createUser(
+    dto: CreateUserDto,
+  ): Promise<{
+    user: UserResponseDto;
+    access_token: string;
+    refresh_token: string;
+  }> {
     const data: Prisma.UserUncheckedCreateInput = {
       ...UsersMapper.toCreateInput(dto),
       password_hash: await this.hashingService.hash(dto.password),
     };
 
+    let user: User;
     try {
-      const user = await this.dbService.user.create({ data });
-      return UsersMapper.toResponseDto(user);
+      user = await this.dbService.user.create({ data });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -43,10 +54,19 @@ export class UsersService {
       ) {
         throw new ConflictException('A user with this email already exists');
       }
-      throw new InternalServerErrorException(
-        ' Something went wrong creating the user',
-      );
+      throw error;
     }
+    const tokens = await this.authService.issueToken({
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      user: UsersMapper.toResponseDto(user),
+      ...tokens,
+    };
+    // return UsersMapper.toResponseDto(user);
   }
   //decides whether or not return the pagination
   public async getUsers(query: GetUsersQueryDto) {
@@ -96,7 +116,7 @@ export class UsersService {
 
     return UsersMapper.toResponseDto(user);
   }
-  
+
   // public async findUserById(id: string): Promise<User | null>{
   //   return await this.dbService.user.findUnique({ where: { id } })
   // }
@@ -104,13 +124,11 @@ export class UsersService {
   public async getUserByEmail(email: string): Promise<UserResponseDto | null> {
     const user = await this.dbService.user.findUnique({ where: { email } });
 
-    return user ? 
-      UsersMapper.toResponseDto(user)
-      : null
+    return user ? UsersMapper.toResponseDto(user) : null;
   }
 
-  public findUserWithPassHash(email: string):Promise<User | null>{
-    return this.dbService.user.findUnique({ where: {email} })
+  public findUserWithPassHash(email: string): Promise<User | null> {
+    return this.dbService.user.findUnique({ where: { email } });
   }
 
   public async updateUser(

@@ -4,3 +4,4 @@ import { CreateUserDto } from './create-user.dto';
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, ['password', 'role'] as const),
 ) {}
+//TODO!: change it to show fields and example
