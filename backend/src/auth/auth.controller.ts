@@ -24,6 +24,7 @@ export class AuthController {
     @Public()
     @Post('refresh')
     @HttpCode(HttpStatus.OK)
+    @ApiBearerAuth('access-token')
     @ApiOperation({ summary: 'Exchange a refresh token for a new token pair' })
     public refresh(@Body() dto: RefreshTokenDto) {
     return this.authService.refresh(dto);

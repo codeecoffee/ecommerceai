@@ -20,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     }
 
     public async validate(payload: JwtPayload){
-        const user = await this.userService.getUserById(payload.sub)
+        //const user = await this.userService.findUserById(payload.sub)
+        const user = await this.userService.findUserWithPassHash(payload.email)
         if(!user){
             throw new UnauthorizedException('User does not exist')
         }

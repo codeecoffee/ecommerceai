@@ -10,14 +10,13 @@ import { AddressMapper } from '../mappers/address.mapper';
 import { ResponseAddressDto } from '../dto/response-address.dto';
 import { Prisma } from '../../../prisma/src/generated/prisma/client';
 import { GetAddressQueryDto } from '../dto/get-address-query.dto';
-import { metadata } from 'reflect-metadata/no-conflict';
 import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
 
 @Injectable()
 export class AddressService {
   constructor(private readonly dbService: DatabaseService) {}
 
-  public async create(
+  public async createAddress(
     createAddressDto: CreateAddressDto,
     currUserId: string,
   ): Promise<ResponseAddressDto> {
@@ -30,15 +29,15 @@ export class AddressService {
     return AddressMapper.toResponseDto(address);
   }
 
-  public async GetAddresses(query: GetAddressQueryDto) {
+  public async getAddresses(query: GetAddressQueryDto) {
     const hasPagination = query.page !== undefined || query.limit !== undefined;
 
     return hasPagination
-      ? this.GetAllAddresses()
-      : this.GetAllAddressesPaginated(query);
+      ? this.getAllAddresses()
+      : this.getAllAddressesPaginated(query);
   }
 
-  private async GetAllAddresses(): Promise<
+  private async getAllAddresses(): Promise<
     PaginatedResponseDto<ResponseAddressDto>
   > {
     const addresses = await this.dbService.address.findMany();
@@ -48,7 +47,7 @@ export class AddressService {
     };
   }
 
-  private async GetAllAddressesPaginated(
+  private async getAllAddressesPaginated(
     query: GetAddressQueryDto,
   ): Promise<PaginatedResponseDto<ResponseAddressDto>> {
     const { page = 1, limit = 20 } = query;
@@ -79,6 +78,7 @@ export class AddressService {
       });
 
       return AddressMapper.toResponseDto(address);
+      
     } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -92,15 +92,45 @@ export class AddressService {
     }
   }
 
-  public async update(
-    id: string,
-    updateAddressDto: UpdateAddressDto,
-  ): Promise<ResponseAddressDto> {
-    const address = await this.dbService.address.update({
-      where: { address_id: id },
-      data: AddressMapper.toUpdateInput(updateAddressDto),
-    });
-    return AddressMapper.toResponseDto(address);
+  public async updateAddressForUser(userId: string, updateAddressDto: UpdateAddressDto ): Promise<ResponseAddressDto> {
+    return this.dbService.$transaction(async (tx)=>{
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { address_id: true }
+      })
+
+      //As method can be used by an admin the check is needed
+      if(!user) throw new NotFoundException(`User with id ${userId} not found`)
+      
+      const oldAddressId = user.address_id
+
+      const newAddress = await tx.address.create({
+        data: AddressMapper.toCreateInput(updateAddressDto as CreateAddressDto)
+      })
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { address_id: newAddress.address_id }
+      })
+
+      //Check if old address became orphaned
+      if(oldAddressId){
+        const remainingUsers = await tx.user.count({ where: { address_id: oldAddressId } })
+        const remainingOrders = await tx.order.count({ where: { address_id: oldAddressId } })
+
+        if(remainingUsers === 0 && remainingOrders === 0){
+          await tx.address.delete({ where: { address_id: oldAddressId } })
+        }
+      } 
+      return AddressMapper.toResponseDto(newAddress)
+    })
+    
+    
+    // const address = await this.dbService.address.update({
+    //   where: { address_id: id },
+    //   data: AddressMapper.toUpdateInput(updateAddressDto),
+    // });
+    // return AddressMapper.toResponseDto(address);
   }
 
   public async removeUserFromAddressAndCleanUp(userId: string): Promise<void> {
@@ -135,5 +165,10 @@ export class AddressService {
         await tx.address.delete({ where: { address_id: addressId } });
       }
     });
+  }
+
+  public async forceDeleteAddress(addressId: string):Promise<void>{
+    await this.dbService.address.delete({where: {address_id : addressId}})
+    return
   }
 }

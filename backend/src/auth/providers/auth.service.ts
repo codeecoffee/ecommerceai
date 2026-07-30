@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   public async login(authDto: AuthDto) {
-    const user = await this.usersService.getUserByEmail(authDto.email)
+    const user = await this.usersService.findUserWithPassHash(authDto.email)
     
     if(!user){
       throw new UnauthorizedException('Invalid credentials')

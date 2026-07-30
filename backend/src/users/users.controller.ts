@@ -48,11 +48,8 @@ export class UsersController {
   @Public()
   @UseGuards(OptionalAdminGuard)
   @ApiBearerAuth('access-token')
-  public async createUser(@Body() createUserInput: CreateUserDto) {
-    const user = await this.userService.createUser(createUserInput);
-    return plainToInstance(UserResponseDto, user, {
-      excludeExtraneousValues: true
-    })
+  public createUser(@Body() createUserInput: CreateUserDto) {
+    return this.userService.createUser(createUserInput);
   }
 
   @Get()
@@ -105,7 +102,7 @@ export class UsersController {
 
   @Patch(':id/role')
   @ApiOperation({ summary: 'Admin is able to change an user role' })
-    @ApiResponse({ 
+  @ApiResponse({ 
     status: 200, 
     description: 'User updated', 
     type: UserResponseDto 
@@ -156,7 +153,24 @@ export class UsersController {
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
   @UseGuards(OwnershipOrAdminGuard) //Admin can delete an account and user can delete their own account
-  public async deleteUser(@Param() params: GetUsersParamDto) {
-    return await this.userService.deleteUser(params.id);
+  public deleteUser(@Param('id') params: GetUsersParamDto) {
+    return this.userService.deleteUser(params.id);
+  }
+
+  @Delete(':id/address')
+  @ApiOperation({ summary: 'Deletes a specific address by user UUID' })
+  @ApiResponse({
+    status: 204,
+    description: 'No Content',
+  })
+  @ApiParam({
+    name: 'id',
+    example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
+  })
+  @UseGuards(OwnershipOrAdminGuard) 
+  public removeMyAddress(
+    @Param() params: GetUsersParamDto
+  ){
+    return this.userService.removeUserAddress(params.id)
   }
 }

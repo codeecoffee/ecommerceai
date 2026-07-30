@@ -4,7 +4,7 @@ import { AddressController } from './address.controller';
 import { DatabaseService } from '../database/providers/database.service';
 
 @Module({
-  imports: [DatabaseService],
+  imports: [],
   exports: [AddressService],
   controllers: [AddressController],
   providers: [AddressService],
