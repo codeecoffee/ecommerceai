@@ -2,27 +2,31 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
 import { IsUUID } from "class-validator";
 
-export class PostResponseDto {
+export class ResponsePostDto {
     @ApiProperty({description: 'Post UUID'})
     @Expose()
     postId!: string;
     
-    @ApiProperty({description: 'Authors UUID'})
+    @ApiProperty({description: 'Authors info'})
     @Expose()
-    authorId!: string;
-    
+    author!:{
+        id: string
+        firstName: string
+        lastName: string
+    };
+
+    @ApiProperty({ description: 'Post title'})
+    @Expose()
+    title!: string;
+
     @ApiProperty({ description: 'Product rating'})
     @Expose()
     rating!: number;
     
     @ApiProperty({ description: 'Product comments'})
     @Expose()
-    comment!: string;
-    
-    @ApiProperty({ description: "Product UUID"})
-    @Expose()
-    @IsUUID()
-    productId!: string;
+    comment?: string | null;
+
 
     @ApiProperty({ description: "Date when Post was created"})
     @Expose()
