@@ -32,7 +32,6 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
-
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
@@ -85,7 +84,6 @@ export class UsersController {
   @ApiResponse({
     status: 404,
     description: 'User not found.',
-
   })
   @ApiOkResponse({ type: UserResponseDto })
   @ApiParam({
@@ -100,10 +98,10 @@ export class UsersController {
 
   @Patch(':id/role')
   @ApiOperation({ summary: 'Admin is able to change an user role' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User updated', 
-    type: UserResponseDto 
+  @ApiResponse({
+    status: 200,
+    description: 'User updated',
+    type: UserResponseDto,
   })
   @ApiParam({
     name: 'id',
@@ -122,9 +120,9 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'patches a specific user' })
-  @ApiOkResponse({  
-    description: 'User updated', 
-    type: UserResponseDto 
+  @ApiOkResponse({
+    description: 'User updated',
+    type: UserResponseDto,
   })
   @ApiParam({
     name: 'id',
@@ -139,7 +137,6 @@ export class UsersController {
   ) {
     return this.userService.updateUser(params.id, updateUserDto);
   }
-
 
   @Delete(':id')
   @ApiOperation({ summary: 'Deletes a specific user by UUID' })
@@ -167,11 +164,9 @@ export class UsersController {
     name: 'id',
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
-  @UseGuards(OwnershipOrAdminGuard) 
+  @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
-  public removeMyAddress(
-    @Param() params: GetUserParamDto
-  ){
-    return this.userService.removeUserAddress(params.id)
+  public removeMyAddress(@Param() params: GetUserParamDto) {
+    return this.userService.removeUserAddress(params.id);
   }
 }

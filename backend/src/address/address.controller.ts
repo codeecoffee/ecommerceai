@@ -1,8 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { AddressService } from './providers/address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
-import { ApiBearerAuth, ApiBody, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { OwnershipOrAdminGuard } from '../auth/guards/ownership-or-admin.guard';
 import { GetAddressQueryDto } from './dto/get-address-query.dto';
@@ -29,9 +49,9 @@ export class AddressController {
   @ApiBearerAuth('access-token')
   public createAddress(
     @Body() createAddressDto: CreateAddressDto,
-    @CurrentUser() user: { id: string }
-    ) {
-    return this.addressService.createAddress(createAddressDto,user.id);
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.addressService.createAddress(createAddressDto, user.id);
   }
 
   @Get()
@@ -41,7 +61,7 @@ export class AddressController {
   @ApiResponse({
     status: 200,
     description: 'Addresses fetched successfully based on query',
-    type: ResponseAddressDto
+    type: ResponseAddressDto,
   })
   @ApiQuery({
     name: 'limit',
@@ -68,7 +88,7 @@ export class AddressController {
   @Get(':id')
   @ApiOperation({ summary: 'Fetches a specific Address by UUID' })
   @ApiNotFoundResponse({
-    description: 'User not found.'
+    description: 'User not found.',
   })
   @ApiOkResponse({ type: ResponseAddressDto })
   @ApiParam({
@@ -84,14 +104,12 @@ export class AddressController {
 
   //TODO!: Create a route for admin to receive all address info
 
-
-
   @Patch(':id')
   @ApiOperation({ summary: 'patches a specific Address' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Address updated', 
-    type: ResponseAddressDto 
+  @ApiResponse({
+    status: 200,
+    description: 'Address updated',
+    type: ResponseAddressDto,
   })
   @ApiParam({
     name: 'id',
@@ -101,13 +119,17 @@ export class AddressController {
   @UseGuards(OwnershipOrAdminGuard)
   @CheckOwnership({ resource: 'address' })
   public async updateAddress(
-    @CurrentUser() user: { id: string }, 
-    @Body() updateAddressDto: UpdateAddressDto) {
+    @CurrentUser() user: { id: string },
+    @Body() updateAddressDto: UpdateAddressDto,
+  ) {
     return this.addressService.updateAddressForUser(user.id, updateAddressDto);
   }
 
   @Delete(':id/force')
-  @ApiOperation({ summary: 'Admin: force-delete an address regardless of current occupancy or order history' })
+  @ApiOperation({
+    summary:
+      'Admin: force-delete an address regardless of current occupancy or order history',
+  })
   @ApiResponse({ status: 204, description: 'No Content' })
   @ApiParam({ name: 'id', example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e' })
   @UseGuards(RolesGuard)

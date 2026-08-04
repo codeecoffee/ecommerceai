@@ -38,5 +38,4 @@ export class CreatePostDto {
   @MinLength(5)
   @MaxLength(250)
   comment?: string;
-
 }

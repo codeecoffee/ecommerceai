@@ -32,9 +32,7 @@ export class UsersService {
     private readonly addressService: AddressService,
   ) {}
 
-  public async createUser(
-    dto: CreateUserDto,
-  ): Promise<{
+  public async createUser(dto: CreateUserDto): Promise<{
     user: UserResponseDto;
     access_token: string;
     refresh_token: string;

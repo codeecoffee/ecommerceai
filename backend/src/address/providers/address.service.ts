@@ -78,7 +78,6 @@ export class AddressService {
       });
 
       return AddressMapper.toResponseDto(address);
-      
     } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -92,40 +91,47 @@ export class AddressService {
     }
   }
 
-  public async updateAddressForUser(userId: string, updateAddressDto: UpdateAddressDto ): Promise<ResponseAddressDto> {
-    return this.dbService.$transaction(async (tx)=>{
+  public async updateAddressForUser(
+    userId: string,
+    updateAddressDto: UpdateAddressDto,
+  ): Promise<ResponseAddressDto> {
+    return this.dbService.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { id: userId },
-        select: { address_id: true }
-      })
+        select: { address_id: true },
+      });
 
       //As method can be used by an admin the check is needed
-      if(!user) throw new NotFoundException(`User with id ${userId} not found`)
-      
-      const oldAddressId = user.address_id
+      if (!user)
+        throw new NotFoundException(`User with id ${userId} not found`);
+
+      const oldAddressId = user.address_id;
 
       const newAddress = await tx.address.create({
-        data: AddressMapper.toCreateInput(updateAddressDto as CreateAddressDto)
-      })
+        data: AddressMapper.toCreateInput(updateAddressDto as CreateAddressDto),
+      });
 
       await tx.user.update({
         where: { id: userId },
-        data: { address_id: newAddress.address_id }
-      })
+        data: { address_id: newAddress.address_id },
+      });
 
       //Check if old address became orphaned
-      if(oldAddressId){
-        const remainingUsers = await tx.user.count({ where: { address_id: oldAddressId } })
-        const remainingOrders = await tx.order.count({ where: { address_id: oldAddressId } })
+      if (oldAddressId) {
+        const remainingUsers = await tx.user.count({
+          where: { address_id: oldAddressId },
+        });
+        const remainingOrders = await tx.order.count({
+          where: { address_id: oldAddressId },
+        });
 
-        if(remainingUsers === 0 && remainingOrders === 0){
-          await tx.address.delete({ where: { address_id: oldAddressId } })
+        if (remainingUsers === 0 && remainingOrders === 0) {
+          await tx.address.delete({ where: { address_id: oldAddressId } });
         }
-      } 
-      return AddressMapper.toResponseDto(newAddress)
-    })
-    
-    
+      }
+      return AddressMapper.toResponseDto(newAddress);
+    });
+
     // const address = await this.dbService.address.update({
     //   where: { address_id: id },
     //   data: AddressMapper.toUpdateInput(updateAddressDto),
@@ -167,8 +173,8 @@ export class AddressService {
     });
   }
 
-  public async forceDeleteAddress(addressId: string):Promise<void>{
-    await this.dbService.address.delete({where: {address_id : addressId}})
-    return
+  public async forceDeleteAddress(addressId: string): Promise<void> {
+    await this.dbService.address.delete({ where: { address_id: addressId } });
+    return;
   }
 }

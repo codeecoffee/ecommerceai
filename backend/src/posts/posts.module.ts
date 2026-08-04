@@ -7,6 +7,6 @@ import { PostsMapper } from './mappers/posts.mapper';
 @Module({
   controllers: [PostsController],
   providers: [PostsService, PostsMapper],
-  imports:[UsersModule],
+  imports: [UsersModule],
 })
 export class PostsModule {}

@@ -1,10 +1,12 @@
-import { CreateUserDto } from "../dto/create-user.dto";
+import { CreateUserDto } from '../dto/create-user.dto';
 import { Prisma, User } from '../../../prisma/src/generated/prisma/client';
-import { UpdateUserDto } from "../dto/update-user.dto";
-import { UserResponseDto } from "../dto/response-user.dto"
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserResponseDto } from '../dto/response-user.dto';
 
-export class UsersMapper{
-static toCreateInput(dto: CreateUserDto): Omit<Prisma.UserUncheckedCreateInput, 'password_hash'> {
+export class UsersMapper {
+  static toCreateInput(
+    dto: CreateUserDto,
+  ): Omit<Prisma.UserUncheckedCreateInput, 'password_hash'> {
     return {
       first_name: dto.firstName,
       last_name: dto.lastName,
@@ -21,11 +23,11 @@ static toCreateInput(dto: CreateUserDto): Omit<Prisma.UserUncheckedCreateInput, 
       ...(dto.lastName !== undefined && { last_name: dto.lastName }),
       ...(dto.email !== undefined && { email: dto.email }),
       ...(dto.photoUrl !== undefined && { photo_url: dto.photoUrl }),
-      ...(dto.addressId !== undefined && { address_id: dto.addressId })
+      ...(dto.addressId !== undefined && { address_id: dto.addressId }),
     };
   }
-  
-   static toResponseDto(user: User): UserResponseDto{
+
+  static toResponseDto(user: User): UserResponseDto {
     return {
       id: user.id,
       firstName: user.first_name,
@@ -35,14 +37,7 @@ static toCreateInput(dto: CreateUserDto): Omit<Prisma.UserUncheckedCreateInput, 
       addressId: user.address_id,
       role: user.role,
       createdAt: user.created_at,
-      updatedAt: user.updated_at
-    }
+      updatedAt: user.updated_at,
+    };
   }
 }
-
-
-
-
-
-
-

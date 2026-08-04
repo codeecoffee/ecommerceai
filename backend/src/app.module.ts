@@ -10,7 +10,13 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { AddressModule } from './address/address.module';
 
 @Module({
-  imports: [UsersModule, PostsModule, AuthModule, DatabaseModule, AddressModule],
+  imports: [
+    UsersModule,
+    PostsModule,
+    AuthModule,
+    DatabaseModule,
+    AddressModule,
+  ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
