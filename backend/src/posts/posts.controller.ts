@@ -9,10 +9,12 @@ import {
   ParseIntPipe,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -23,23 +25,43 @@ import {
 import { GetPostParamDto } from './dto/get-post-param.dto';
 import { GetUserPostsParamDto } from './dto/get-user-posts-param.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostResponseDto } from './dto/response-post-dto';
+import { ResponsePostDto } from './dto/response-post-dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { OwnershipOrAdminGuard } from '../auth/guards/ownership-or-admin.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from '../auth/decorators/public.decorator';
+import { GetPostsQueryDto } from './dto/get-posts-query.dto';
+import { PaginatedResponseDto } from '../common/dto/response-paginated.dto';
 
-@Controller('posts')
+@Controller()
 @ApiTags('Posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  // @ApiOperation({summary: "Creates a new post written by the logged in User"})
-  // @ApiBody({ type: CreatePostDto })
-  // @ApiOkResponse({description: 'Post created successfully'})
-  // @Post()
-  // public createPost(@Body() createPostDto: CreatePostDto){
-  //     return this.postsService.createPost(createPostDto);
-  // }
+  @Post('products/:productId/reviews')
+  @ApiOperation({ summary: 'Creates a new review post to a product' })
+  @ApiBody({ type: CreatePostDto })
+  @ApiOkResponse({ description: 'Post created successfully' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
+  public createPost(
+    @Param('productId') productId: string,
+    @Body() createPostDto: CreatePostDto,
+    @CurrentUser() author: { id: string },
+  ): Promise<ResponsePostDto> {
+    return this.postsService.createPost(productId, createPostDto, author.id);
+  }
+
+  @Get('/products/:productId/reviews')
+  @ApiOperation({ summary: 'Show post reviews for a product' })
+  @ApiOkResponse({ type: ResponsePostDto})
+  @Public()
+  public getProductReviews(productId: string, query: GetPostsQueryDto): Promise<PaginatedResponseDto<ResponsePostDto>> {
+    return this.postsService.getAllPostsForProd(productId, query);
+  }
 
   // @ApiOperation({
-  //     summary: 'Retrieve posts from an specific user'
+  //     summary: 'Retrieve posts from a specific user'
   // })
   // @ApiResponse({
   //     status: 200,

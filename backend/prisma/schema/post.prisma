@@ -5,7 +5,7 @@ model Post {
   title      String
   rating     Int
   comment    String?
-  product    Product  @relation(fields: [product_id], references: [prod_id])
+  product    Product  @relation(fields: [product_id], references: [prod_id], onDelete: Cascade)
   product_id String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

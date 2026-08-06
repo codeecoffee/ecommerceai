@@ -87,7 +87,7 @@ export class UsersService {
       this.dbService.user.count(),
     ]);
     return {
-      data: users.map(UsersMapper.toResponseDto),
+      data: users.map((user) => UsersMapper.toResponseDto(user)),
       metadata: {
         total,
         page,
@@ -102,7 +102,7 @@ export class UsersService {
       orderBy: { first_name: 'desc' },
     });
     return {
-      data: users.map(UsersMapper.toResponseDto),
+      data: users.map((user) => UsersMapper.toResponseDto(user)),
       metadata: null,
     };
   }

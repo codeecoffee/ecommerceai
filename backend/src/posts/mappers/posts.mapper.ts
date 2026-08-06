@@ -42,6 +42,14 @@ export class PostsMapper {
     };
   }
 
+  static toUpdateDto(dto: UpdatePostDto): Prisma.PostUncheckedUpdateInput {
+    return {
+      ...(dto.title !== undefined && { title: dto.title }),
+      ...(dto.rating !== undefined && { rating: dto.rating }),
+      ...(dto.comment !== undefined && { comment: dto.comment }),
+    };
+  }
+
   // model Post {
   //   post_id    String   @id @default(uuid())
   //   author     User     @relation(fields: [author_id], references: [id])
