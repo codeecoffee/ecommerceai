@@ -3,8 +3,12 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // !TODO: remove logger
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

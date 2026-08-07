@@ -1,17 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { GetPostParamDto } from '../dto/get-post-param.dto';
 import { UsersService } from '../../users/providers/users.service';
 import { DatabaseService } from '../../database/providers/database.service';
-import {
-  Post,
-  Prisma,
-  Product,
-} from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../../prisma/src/generated/prisma/client';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { PostsMapper } from '../mappers/posts.mapper';
 import { UpdatePostDto } from '../dto/update-post.dto';
 import { ResponsePostDto } from '../dto/response-post-dto';
-import { GetUserPostsParamDto } from '../dto/get-user-posts-param.dto';
 import { GetPostsQueryDto } from '../dto/get-posts-query.dto';
 import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
 
@@ -163,6 +157,4 @@ export class PostsService {
       throw error;
     }
   }
-
-
 }
