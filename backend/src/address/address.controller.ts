@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AddressService } from './providers/address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -122,7 +122,10 @@ export class AddressController {
     @CurrentUser() user: { id: string },
     @Body() updateAddressDto: UpdateAddressDto,
   ) {
-    return this.addressService.updateAddressForUser(user.id, updateAddressDto);
+    return await this.addressService.updateAddressForUser(
+      user.id,
+      updateAddressDto,
+    );
   }
 
   @Delete(':id/force')
@@ -135,6 +138,6 @@ export class AddressController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   public async forceDeleteAddress(@Param() params: GetAddressParamDto) {
-    return this.addressService.forceDeleteAddress(params.id);
+    return await this.addressService.forceDeleteAddress(params.id);
   }
 }

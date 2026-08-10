@@ -54,7 +54,7 @@ export class PostsController {
   @ApiOkResponse({ type: ResponsePostDto })
   @Public()
   public getProductReviews(
-    @Param() productId: string,
+    @Param('productId') productId: string,
     @Query() query: GetPostsQueryDto,
   ): Promise<PaginatedResponseDto<ResponsePostDto>> {
     return this.postsService.getAllPostsForProd(productId, query);
@@ -64,7 +64,9 @@ export class PostsController {
   @ApiOperation({ summary: 'Fetches a product by Id' })
   @ApiOkResponse({ type: ResponsePostDto })
   @Public()
-  public getReviewById(@Param() postId: string): Promise<ResponsePostDto> {
+  public getReviewById(
+    @Param('postId') postId: string,
+  ): Promise<ResponsePostDto> {
     return this.postsService.getPostById(postId);
   }
 
@@ -82,7 +84,7 @@ export class PostsController {
   @ApiBearerAuth('access-token')
   @UseGuards(OwnershipOrAdminGuard)
   public getPostsByAuthor(
-    @Param() authorId: string,
+    @Param('authorId') authorId: string,
     @Query() query: GetPostsQueryDto,
   ) {
     return this.postsService.getPostsByAuthor(authorId, query);
@@ -96,7 +98,7 @@ export class PostsController {
   @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
   public updatePost(
-    @Param() postId: string,
+    @Param('postId') postId: string,
     @Body() dto: UpdatePostDto,
   ): Promise<ResponsePostDto> {
     return this.postsService.updatePost(postId, dto);
@@ -115,7 +117,7 @@ export class PostsController {
   })
   @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
-  public deletePost(@Param() postId: string): Promise<void> {
+  public deletePost(@Param('postId') postId: string): Promise<void> {
     return this.postsService.deletePost(postId);
   }
 }

@@ -1,0 +1,16 @@
+#User (ADMIN)
+e8cce3e9-f4be-4fd7-8593-a287dcbfa543
+tomas.turbando@example.com 12345678Admin!
+
+c4579ddc-8be0-4315-818c-c1463e4fd976
+test@email.com TestP@ss1234!
+
+54ac3c94-a552-4f1b-ae59-a8b84e1ac781
+daniel@email.com Daniel@1234
+
+#prod:
+b1dace64-b0d7-49bc-a68a-f087075c0993
+
+#Cat
+7fdcfe9b-39da-4a8c-b3b9-49eea3fc04af
+

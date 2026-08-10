@@ -15,7 +15,7 @@ import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
 @Injectable()
 export class AddressService {
   constructor(private readonly dbService: DatabaseService) {}
-
+  //!FIX: need to pick up the current user
   public async createAddress(
     createAddressDto: CreateAddressDto,
     currUserId: string,
@@ -42,7 +42,7 @@ export class AddressService {
   > {
     const addresses = await this.dbService.address.findMany();
     return {
-      data: addresses.map(AddressMapper.toResponseDto),
+      data: addresses.map((address) => AddressMapper.toResponseDto(address)),
       metadata: null,
     };
   }
@@ -61,7 +61,7 @@ export class AddressService {
       this.dbService.address.count(),
     ]);
     return {
-      data: addresses.map(AddressMapper.toResponseDto),
+      data: addresses.map((address) => AddressMapper.toResponseDto(address)),
       metadata: {
         total,
         page,

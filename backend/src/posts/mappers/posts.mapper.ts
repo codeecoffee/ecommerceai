@@ -23,7 +23,7 @@ export class PostsMapper {
       product_id: productId,
     };
   }
-
+  //!TODO: return user picture to show up in user card in prod reviews
   static toResponseDto(
     post: Post & { author: Pick<User, 'id' | 'first_name' | 'last_name'> },
   ): ResponsePostDto {
