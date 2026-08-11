@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -35,26 +36,26 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  @Post('products/:productId/reviews')
+  @Post('products/:productId/posts')
   @ApiOperation({ summary: 'Creates a new review post to a product' })
   @ApiBody({ type: CreatePostDto })
   @ApiOkResponse({ description: 'Post created successfully' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   public createPost(
-    @Param('productId') productId: string,
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Body() createPostDto: CreatePostDto,
     @CurrentUser() author: { id: string },
   ): Promise<ResponsePostDto> {
     return this.postsService.createPost(productId, createPostDto, author.id);
   }
 
-  @Get('/products/:productId/reviews')
-  @ApiOperation({ summary: 'Show post reviews for a product' })
+  @Get('/products/:productId/posts')
+  @ApiOperation({ summary: 'Show posts for a product' })
   @ApiOkResponse({ type: ResponsePostDto })
   @Public()
-  public getProductReviews(
-    @Param('productId') productId: string,
+  public getProductPosts(
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Query() query: GetPostsQueryDto,
   ): Promise<PaginatedResponseDto<ResponsePostDto>> {
     return this.postsService.getAllPostsForProd(productId, query);
@@ -64,13 +65,13 @@ export class PostsController {
   @ApiOperation({ summary: 'Fetches a product by Id' })
   @ApiOkResponse({ type: ResponsePostDto })
   @Public()
-  public getReviewById(
-    @Param('postId') postId: string,
+  public getPostsById(
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<ResponsePostDto> {
     return this.postsService.getPostById(postId);
   }
 
-  @Get('/users/:authorId/reviews')
+  @Get('/users/:authorId/posts')
   @ApiOperation({ summary: 'Fetches a specific user by UUID' })
   @ApiResponse({
     status: 404,
@@ -84,13 +85,13 @@ export class PostsController {
   @ApiBearerAuth('access-token')
   @UseGuards(OwnershipOrAdminGuard)
   public getPostsByAuthor(
-    @Param('authorId') authorId: string,
+    @Param('authorId', ParseUUIDPipe) authorId: string,
     @Query() query: GetPostsQueryDto,
   ) {
     return this.postsService.getPostsByAuthor(authorId, query);
   }
 
-  @Patch('/reviews/:reviewId')
+  @Patch('/posts/:postId')
   @ApiParam({
     name: 'postId',
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
@@ -98,16 +99,15 @@ export class PostsController {
   @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
   public updatePost(
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdatePostDto,
   ): Promise<ResponsePostDto> {
     return this.postsService.updatePost(postId, dto);
   }
 
-  @Delete('/reviews/:reviewId')
+  @Delete('/posts/:postId')
   @ApiOperation({ summary: 'Deletes a specific post by post UUID' })
-  @ApiResponse({
-    status: 204,
+  @ApiOkResponse({
     description: 'No Content',
   })
   @ApiParam({
@@ -117,7 +117,9 @@ export class PostsController {
   })
   @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
-  public deletePost(@Param('postId') postId: string): Promise<void> {
+  public deletePost(
+    @Param('postId', ParseUUIDPipe) postId: string,
+  ): Promise<void> {
     return this.postsService.deletePost(postId);
   }
 }
