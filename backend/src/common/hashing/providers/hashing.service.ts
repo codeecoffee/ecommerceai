@@ -8,7 +8,10 @@ export class HashingService {
   public async hash(plainText: string): Promise<string> {
     return await bcrypt.hash(plainText, 10);
   }
-  public async comparePassword(plainText: string, hashPass: string): Promise<boolean> {
+  public async comparePassword(
+    plainText: string,
+    hashPass: string,
+  ): Promise<boolean> {
     return await bcrypt.compare(plainText, hashPass);
   }
 }
