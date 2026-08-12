@@ -33,8 +33,11 @@ describe('PostsService', () => {
     post_id: 'post-1',
     product_id: 'prod-1',
     author_id: 'user-1',
-    content: 'Great product',
+    title: 'Solid product',
+    rating: 5,
+    comment: 'Great product',
     created_at: new Date('2026-01-01'),
+    updated_at: new Date('2026-01-01'),
     author: { id: 'user-1', first_name: 'Phil', last_name: 'D' },
   };
 
@@ -82,7 +85,9 @@ describe('PostsService', () => {
       (row: any) =>
         ({
           id: row.post_id,
-          content: row.content,
+          title: row.title,
+          rating: row.rating,
+          comment: row.comment,
           author: row.author,
         }) as any,
     );
@@ -100,7 +105,11 @@ describe('PostsService', () => {
       dbService.product.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.createPost('missing-prod', { content: 'x' } as any, 'user-1'),
+        service.createPost(
+          'missing-prod',
+          { title: 'x', rating: 5, comment: null } as any,
+          'user-1',
+        ),
       ).rejects.toThrow(NotFoundException);
 
       expect(dbService.post.create).not.toHaveBeenCalled();
@@ -112,7 +121,7 @@ describe('PostsService', () => {
 
       const result = await service.createPost(
         'prod-1',
-        { content: 'Great product' } as any,
+        { title: 'Solid product', rating: 5, comment: 'Great product' },
         'user-1',
       );
 
@@ -124,7 +133,7 @@ describe('PostsService', () => {
         }),
       );
       expect(result).toEqual(
-        expect.objectContaining({ id: 'post-1', content: 'Great product' }),
+        expect.objectContaining({ id: 'post-1', comment: 'Great product' }),
       );
     });
 
@@ -138,7 +147,11 @@ describe('PostsService', () => {
       );
 
       await expect(
-        service.createPost('prod-1', { content: 'x' } as any, 'user-1'),
+        service.createPost(
+          'prod-1',
+          { title: 'x', rating: 5, comment: null } as any,
+          'user-1',
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -147,7 +160,11 @@ describe('PostsService', () => {
       dbService.post.create.mockRejectedValue(new Error('connection reset'));
 
       await expect(
-        service.createPost('prod-1', { content: 'x' } as any, 'user-1'),
+        service.createPost(
+          'prod-1',
+          { title: 'x', rating: 5, comment: null } as any,
+          'user-1',
+        ),
       ).rejects.toThrow('connection reset');
     });
   });
@@ -223,21 +240,21 @@ describe('PostsService', () => {
       );
 
       await expect(
-        service.updatePost('missing', { content: 'edit' } as any),
+        service.updatePost('missing', { comment: 'edit' } as any),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('updates and returns the mapped post on success', async () => {
       dbService.post.update.mockResolvedValue({
         ...mockPostRow,
-        content: 'edited',
+        comment: 'edited',
       });
 
       const result = await service.updatePost('post-1', {
-        content: 'edited',
-      } as any);
+        comment: 'edited',
+      });
 
-      expect(result).toEqual(expect.objectContaining({ content: 'edited' }));
+      expect(result).toEqual(expect.objectContaining({ comment: 'edited' }));
     });
   });
 

@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DatabaseService } from '../../database/providers/database.service';
 import { User } from '../../../prisma/src/generated/prisma/client';
@@ -51,12 +46,22 @@ export class OwnershipOrAdminGuard implements CanActivate {
         });
         return !!address?.users.some((u) => u.id === userId);
       }
+      case 'post': {
+        const post = await this.dbService.post.findUnique({
+          where: { post_id: resourceId },
+          select: { author_id: true },
+        });
+        return post?.author_id === userId;
+      }
       case 'order': {
         const order = await this.dbService.order.findUnique({
           where: { order_id: resourceId },
           select: { user_id: true },
         });
         return order?.user_id === userId;
+      }
+      case 'user': {
+        return resourceId === userId;
       }
       case 'product': {
         return false; // products aren't user-owned — this case probably never applies

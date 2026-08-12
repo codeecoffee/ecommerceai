@@ -30,6 +30,7 @@ import { Public } from '../auth/decorators/public.decorator';
 import { GetPostsQueryDto } from './dto/get-posts-query.dto';
 import { PaginatedResponseDto } from '../common/dto/response-paginated.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CheckOwnership } from '../auth/decorators/check-ownership.decorator';
 
 @Controller()
 @ApiTags('Posts')
@@ -82,8 +83,9 @@ export class PostsController {
     name: 'id',
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
-  @ApiBearerAuth('access-token')
+  @CheckOwnership({ resource: 'user', paramName: 'authorId' })
   @UseGuards(OwnershipOrAdminGuard)
+  @ApiBearerAuth('access-token')
   public getPostsByAuthor(
     @Param('authorId', ParseUUIDPipe) authorId: string,
     @Query() query: GetPostsQueryDto,
@@ -96,6 +98,7 @@ export class PostsController {
     name: 'postId',
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
   })
+  @CheckOwnership({ resource: 'post', paramName: 'postId' })
   @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
   public updatePost(
@@ -115,6 +118,7 @@ export class PostsController {
     example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e',
     type: String(),
   })
+  @CheckOwnership({ resource: 'post', paramName: 'postId' })
   @UseGuards(OwnershipOrAdminGuard)
   @ApiBearerAuth('access-token')
   public deletePost(
