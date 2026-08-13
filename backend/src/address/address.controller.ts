@@ -23,35 +23,39 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { OwnershipOrAdminGuard } from '../auth/guards/ownership-or-admin.guard';
 import { GetAddressQueryDto } from './dto/get-address-query.dto';
 import { ResponseAddressDto } from './dto/response-address.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { GetAddressParamDto } from './dto/get-address-param.dto';
 import { CheckOwnership } from '../auth/decorators/check-ownership.decorator';
+import { GetUserAddressParamDto } from './dto/get-user-address-param.dto';
 
 @Controller('address')
 @ApiTags('Address')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Creates a new Address' })
+  @Post('user/:userId')
+  @ApiOperation({
+    summary: 'Add an address for a specific user (self or admin)',
+  })
   @ApiBody({ type: CreateAddressDto })
   @ApiResponse({
     status: 201,
-    description: 'Address created successfully',
+    description: 'Address created and linked to the user successfully',
   })
   @UseGuards(OwnershipOrAdminGuard)
-  @CheckOwnership({ resource: 'address' })
+  @CheckOwnership({ resource: 'user', paramName: 'userId' })
   @ApiBearerAuth('access-token')
-  public createAddress(
+  public async createAddress(
     @Body() createAddressDto: CreateAddressDto,
-    @CurrentUser() user: { id: string },
+    @Param() params: GetUserAddressParamDto,
   ) {
-    return this.addressService.createAddress(createAddressDto, user.id);
+    return this.addressService.addAddressForUser(
+      params.userId,
+      createAddressDto,
+    );
   }
 
   @Get()
@@ -98,14 +102,12 @@ export class AddressController {
   @ApiBearerAuth('access-token')
   @UseGuards(OwnershipOrAdminGuard)
   @CheckOwnership({ resource: 'address' })
-  public async getAddressById(@Param('id') id: string) {
-    return this.addressService.getAddressById(id);
+  public async getAddressById(@Param() params: GetUserAddressParamDto) {
+    return this.addressService.getAddressById(params.userId);
   }
 
-  //TODO!: Create a route for admin to receive all address info
-
-  @Patch(':id')
-  @ApiOperation({ summary: 'patches a specific Address' })
+  @Patch('user/:userId')
+  @ApiOperation({ summary: 'patches a specific users address (self or admin)' })
   @ApiResponse({
     status: 200,
     description: 'Address updated',
@@ -119,25 +121,21 @@ export class AddressController {
   @UseGuards(OwnershipOrAdminGuard)
   @CheckOwnership({ resource: 'address' })
   public async updateAddress(
-    @CurrentUser() user: { id: string },
+    @Param() params: GetUserAddressParamDto,
     @Body() updateAddressDto: UpdateAddressDto,
   ) {
     return await this.addressService.updateAddressForUser(
-      user.id,
+      params.userId,
       updateAddressDto,
     );
   }
 
-  @Delete(':id/force')
-  @ApiOperation({
-    summary:
-      'Admin: force-delete an address regardless of current occupancy or order history',
-  })
-  @ApiResponse({ status: 204, description: 'No Content' })
-  @ApiParam({ name: 'id', example: '7aa02917-e3b5-4e83-9849-352f0c8dff2e' })
-  @UseGuards(RolesGuard)
-  @Roles('ADMIN')
-  public async forceDeleteAddress(@Param() params: GetAddressParamDto) {
-    return await this.addressService.forceDeleteAddress(params.id);
+  @Delete('user/:userId')
+  @ApiOperation({ summary: "Delete a specific user's address (self or admin)" })
+  @UseGuards(OwnershipOrAdminGuard)
+  @CheckOwnership({ resource: 'user', paramName: 'userId' })
+  @ApiBearerAuth('access-token')
+  public async deleteAddressForUser(@Param() params: GetUserAddressParamDto) {
+    await this.addressService.deleteAddressForUser(params.userId);
   }
 }

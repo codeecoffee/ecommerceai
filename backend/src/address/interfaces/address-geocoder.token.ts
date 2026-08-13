@@ -1,0 +1,1 @@
+export const ADDRESS_GEOCODER = Symbol('ADDRESS_GEOCODER');

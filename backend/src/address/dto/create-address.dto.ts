@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsISO31661Alpha2,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -18,14 +18,14 @@ export class CreateAddressDto {
   @ApiProperty({ description: 'City' })
   @IsString()
   @IsNotEmpty()
-  @MinLength(3)
+  @MinLength(1)
   @MaxLength(25)
   city!: string;
 
   @ApiProperty({ description: 'State' })
   @IsString()
   @IsNotEmpty()
-  @MinLength(3)
+  @MinLength(1)
   @MaxLength(20)
   state!: string;
 
@@ -37,14 +37,9 @@ export class CreateAddressDto {
   postalCode!: string;
 
   @ApiProperty({ description: 'Country' })
-  @IsString()
+  @IsISO31661Alpha2()
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(20)
-  country!: string;
-
-  @ApiProperty({ description: 'Users who have this address' })
-  @IsString()
-  @IsNotEmpty()
-  users!: string[];
+  countryCode!: string;
 }

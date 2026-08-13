@@ -1,10 +1,11 @@
 model Address {
-  address_id  String  @id @default(uuid())
-  street      String
-  city        String
-  state       String
-  postal_code String
-  country     String
-  users       User[]
-  orders      Order[]
+  address_id     String  @id @default(uuid())
+  street         String
+  city           String
+  state          String
+  postal_code    String
+  country        String
+  normalized_key String  @unique
+  users          User[]
+  orders         Order[]
 }

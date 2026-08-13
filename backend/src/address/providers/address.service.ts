@@ -1,6 +1,7 @@
 import {
+  ConflictException,
+  Inject,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateAddressDto } from '../dto/create-address.dto';
@@ -10,171 +11,183 @@ import { AddressMapper } from '../mappers/address.mapper';
 import { ResponseAddressDto } from '../dto/response-address.dto';
 import { Prisma } from '../../../prisma/src/generated/prisma/client';
 import { GetAddressQueryDto } from '../dto/get-address-query.dto';
-import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
+import { ADDRESS_GEOCODER } from '../interfaces/address-geocoder.token';
+import type {
+  AddressGeocoder,
+  GeocodedAddress,
+} from '../interfaces/address-geocoder.interface';
+import { AddressNormalizer } from '../utils/address-normalizer';
 
 @Injectable()
 export class AddressService {
-  constructor(private readonly dbService: DatabaseService) {}
-  //!FIX: need to pick up the current user
-  public async createAddress(
-    createAddressDto: CreateAddressDto,
-    currUserId: string,
-  ): Promise<ResponseAddressDto> {
-    const address = await this.dbService.address.create({
-      data: {
-        ...AddressMapper.toCreateInput(createAddressDto),
-        users: { connect: { id: currUserId } },
-      },
-    });
-    return AddressMapper.toResponseDto(address);
-  }
+  constructor(
+    private readonly dbService: DatabaseService,
+    @Inject(ADDRESS_GEOCODER) private readonly geocoder: AddressGeocoder,
+  ) {}
 
-  public async getAddresses(query: GetAddressQueryDto) {
-    const hasPagination = query.page !== undefined || query.limit !== undefined;
-
-    return hasPagination
-      ? this.getAllAddresses()
-      : this.getAllAddressesPaginated(query);
-  }
-
-  private async getAllAddresses(): Promise<
-    PaginatedResponseDto<ResponseAddressDto>
-  > {
-    const addresses = await this.dbService.address.findMany();
-    return {
-      data: addresses.map((address) => AddressMapper.toResponseDto(address)),
-      metadata: null,
-    };
-  }
-
-  private async getAllAddressesPaginated(
-    query: GetAddressQueryDto,
-  ): Promise<PaginatedResponseDto<ResponseAddressDto>> {
-    const { page = 1, limit = 20 } = query;
-    const skip = (page - 1) * limit;
-    const [addresses, total] = await Promise.all([
-      this.dbService.address.findMany({
-        skip,
-        take: limit,
-        orderBy: { country: 'desc' },
-      }),
-      this.dbService.address.count(),
-    ]);
-    return {
-      data: addresses.map((address) => AddressMapper.toResponseDto(address)),
-      metadata: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
-  }
-
-  public async getAddressById(id: string): Promise<ResponseAddressDto> {
+  private async resolveCanonicalFields(dto: CreateAddressDto) {
+    const rawQuery = `${dto.street}, ${dto.city}, ${dto.state}, ${dto.postalCode}`;
+    let geocoded: GeocodedAddress | null = null;
     try {
-      const address = await this.dbService.address.findFirstOrThrow({
-        where: { address_id: id },
-      });
-
-      return AddressMapper.toResponseDto(address);
-    } catch (error: any) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException(' Address Id not found!');
-      }
-      throw new InternalServerErrorException(
-        `An Unknown Server error happened error: ${error.code}`,
-      );
+      geocoded = await this.geocoder.geocode(rawQuery);
+    } catch {
+      geocoded = null;
     }
+    return (
+      geocoded ?? {
+        street: dto.street,
+        city: dto.city,
+        state: dto.state,
+        postalCode: dto.postalCode,
+        countryCode: dto.countryCode,
+      }
+    );
+  }
+
+  //tx: Prisma.TransactionClient
+  private async findOrCreateAddress(
+    tx: Prisma.TransactionClient,
+    dto: CreateAddressDto,
+  ) {
+    const resolved = await this.resolveCanonicalFields(dto);
+    const normalizedKey = AddressNormalizer.buildKey(resolved);
+
+    const existing = await tx.address.findUnique({
+      where: { normalized_key: normalizedKey },
+    });
+    if (existing) {
+      return existing;
+    }
+    try {
+      return await tx.address.create({
+        data: AddressMapper.toCreateInput(resolved),
+      });
+    } catch (err: any) {
+      if (err.code === 'P2002') {
+        return await tx.address.findUniqueOrThrow({
+          where: { normalized_key: normalizedKey },
+        });
+      }
+      throw err;
+    }
+  }
+
+  private async cleanupIfOrphaned(
+    tx: Prisma.TransactionClient,
+    addressId: string,
+  ) {
+    const [userCount, orderCount] = await Promise.all([
+      tx.user.count({ where: { address_id: addressId } }),
+      tx.order.count({ where: { address_id: addressId } }),
+    ]);
+    if (userCount === 0 && orderCount === 0) {
+      await tx.address.delete({ where: { address_id: addressId } });
+    }
+  }
+
+  public async addAddressForUser(
+    userId: string,
+    dto: CreateAddressDto,
+  ): Promise<ResponseAddressDto> {
+    return this.dbService.$transaction(async (tx: Prisma.TransactionClient) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { address_id: true },
+      });
+      if (!user) throw new NotFoundException(`User ${userId} not found`);
+      if (user.address_id) {
+        throw new ConflictException(
+          'User already has an address - use update instead',
+        );
+      }
+
+      const address = await this.findOrCreateAddress(tx, dto);
+      await tx.user.update({
+        where: { id: userId },
+        data: { address_id: address.address_id },
+      });
+      return AddressMapper.toResponseDto(address);
+    });
   }
 
   public async updateAddressForUser(
     userId: string,
-    updateAddressDto: UpdateAddressDto,
+    dto: UpdateAddressDto,
   ): Promise<ResponseAddressDto> {
+    return this.dbService.$transaction(async (tx: Prisma.TransactionClient) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { address_id: true },
+      });
+      if (!user) throw new NotFoundException(`User ${userId} not found`);
+      if (!user.address_id)
+        throw new NotFoundException('User has no address to update');
+
+      const current = await tx.address.findUniqueOrThrow({
+        where: { address_id: user.address_id },
+      });
+
+      const merged: CreateAddressDto = {
+        street: dto.street ?? current.street,
+        city: dto.city ?? current.city,
+        state: dto.state ?? current.state,
+        postalCode: dto.postalCode ?? current.postal_code,
+        countryCode: dto.countryCode ?? current.country,
+      };
+
+      const newAddress = await this.findOrCreateAddress(tx, merged);
+
+      if (newAddress.address_id === current.address_id)
+        return AddressMapper.toResponseDto(newAddress);
+      await tx.user.update({
+        where: { id: userId },
+        data: { address_id: newAddress.address_id },
+      });
+      await this.cleanupIfOrphaned(tx, current.address_id);
+
+      return AddressMapper.toResponseDto(newAddress);
+    });
+  }
+
+  public async deleteAddressForUser(userId: string): Promise<void> {
     return this.dbService.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { id: userId },
         select: { address_id: true },
       });
-
-      //As method can be used by an admin the check is needed
-      if (!user)
-        throw new NotFoundException(`User with id ${userId} not found`);
-
-      const oldAddressId = user.address_id;
-
-      const newAddress = await tx.address.create({
-        data: AddressMapper.toCreateInput(updateAddressDto as CreateAddressDto),
-      });
-
-      await tx.user.update({
-        where: { id: userId },
-        data: { address_id: newAddress.address_id },
-      });
-
-      //Check if old address became orphaned
-      if (oldAddressId) {
-        const remainingUsers = await tx.user.count({
-          where: { address_id: oldAddressId },
-        });
-        const remainingOrders = await tx.order.count({
-          where: { address_id: oldAddressId },
-        });
-
-        if (remainingUsers === 0 && remainingOrders === 0) {
-          await tx.address.delete({ where: { address_id: oldAddressId } });
-        }
-      }
-      return AddressMapper.toResponseDto(newAddress);
-    });
-
-    // const address = await this.dbService.address.update({
-    //   where: { address_id: id },
-    //   data: AddressMapper.toUpdateInput(updateAddressDto),
-    // });
-    // return AddressMapper.toResponseDto(address);
-  }
-
-  public async removeUserFromAddressAndCleanUp(userId: string): Promise<void> {
-    await this.dbService.$transaction(async (tx) => {
-      const user = await tx.user.findUnique({
-        where: { id: userId },
-        select: { address_id: true },
-      });
-
-      if (!user?.address_id) return; //nothing to detach
-
+      if (!user?.address_id)
+        throw new NotFoundException(`User ${userId} has no address to delete`);
       const addressId = user.address_id;
-
-      //1. Detach the user from the address
       await tx.user.update({
         where: { id: userId },
         data: { address_id: null },
       });
-
-      //2. Check whether anyone else still ref this address
-
-      const remaningUsers = await tx.user.count({
-        where: { address_id: addressId },
-      });
-
-      const remainingOrders = await tx.order.count({
-        where: { address_id: addressId },
-      });
-
-      //3. Only delete the address if nothing else points to it
-      if (remaningUsers === 0 && remainingOrders === 0) {
-        await tx.address.delete({ where: { address_id: addressId } });
-      }
+      await this.cleanupIfOrphaned(tx, addressId);
     });
   }
 
-  public async forceDeleteAddress(addressId: string): Promise<void> {
-    await this.dbService.address.delete({ where: { address_id: addressId } });
-    return;
+  public async getAddresses(query: GetAddressQueryDto) {
+    const { page = 1, limit = 10 } = query;
+    const [addresses, total] = await Promise.all([
+      this.dbService.address.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.dbService.address.count(),
+    ]);
+    return {
+      data: addresses.map((addr) => AddressMapper.toResponseDto(addr)),
+      total,
+      page,
+      limit,
+    };
+  }
+
+  public async getAddressById(addressId: string): Promise<ResponseAddressDto> {
+    const address = await this.dbService.address.findUnique({
+      where: { address_id: addressId },
+    });
+    if (!address) throw new NotFoundException(`Address ${addressId} not found`);
+    return AddressMapper.toResponseDto(address);
   }
 }
