@@ -39,7 +39,7 @@ export class CreateAddressDto {
   @ApiProperty({ description: 'Country' })
   @IsISO31661Alpha2()
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(20)
+  @MinLength(2)
+  @MaxLength(3)
   countryCode!: string;
 }

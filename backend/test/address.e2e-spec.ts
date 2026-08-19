@@ -1,14 +1,15 @@
 // test/address.e2e-spec.ts
 import { Test } from '@nestjs/testing';
 import {
+  CanActivate,
   ExecutionContext,
   INestApplication,
   ValidationPipe,
 } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import request from 'supertest';
 import { AddressModule } from '../src/address/address.module';
 import { DatabaseService } from '../src/database/providers/database.service';
-import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard';
 import { ADDRESS_GEOCODER } from '../src/address/interfaces/address-geocoder.token';
 import { AddressGeocoder } from '../src/address/interfaces/address-geocoder.interface';
 
@@ -22,24 +23,31 @@ describe('Address (e2e)', () => {
     geocode: jest.fn().mockResolvedValue(null), // forces the raw-input fallback path by default
   };
 
+  // Stands in for JwtAuthGuard. That guard is only ever registered as an
+  // APP_GUARD inside AppModule — this test only compiles AddressModule, so
+  // there's no existing JwtAuthGuard provider here for overrideGuard() to
+  // attach to (it would silently no-op). Registering our own fake as
+  // APP_GUARD on the test module gets request.user populated the same way,
+  // without dragging in the rest of AppModule's imports.
+  const fakeAuthGuard: CanActivate = {
+    canActivate: (ctx: ExecutionContext) => {
+      const req = ctx.switchToHttp().getRequest();
+      // lets each test pick which user is "logged in" via a header
+      req.user = { id: req.headers['x-test-user-id'], role: 'USER' };
+      return true;
+    },
+  };
+
   let userAId: string;
   let userBId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AddressModule],
+      providers: [{ provide: APP_GUARD, useValue: fakeAuthGuard }],
     })
       .overrideProvider(ADDRESS_GEOCODER)
       .useValue(fakeGeocoder)
-      .overrideGuard(JwtAuthGuard)
-      .useValue({
-        canActivate: (ctx: ExecutionContext) => {
-          const req = ctx.switchToHttp().getRequest();
-          // lets each test pick which user is "logged in" via a header
-          req.user = { id: req.headers['x-test-user-id'], role: 'USER' };
-          return true;
-        },
-      })
       .compile();
 
     app = moduleRef.createNestApplication();

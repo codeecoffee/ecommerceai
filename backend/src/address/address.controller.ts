@@ -119,7 +119,7 @@ export class AddressController {
   })
   @ApiBody({ type: UpdateAddressDto })
   @UseGuards(OwnershipOrAdminGuard)
-  @CheckOwnership({ resource: 'address' })
+  @CheckOwnership({ resource: 'user', paramName: 'userId' })
   public async updateAddress(
     @Param() params: GetUserAddressParamDto,
     @Body() updateAddressDto: UpdateAddressDto,
