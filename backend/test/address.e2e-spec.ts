@@ -52,36 +52,47 @@ describe('Address (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Clean slate per test — order matters if FKs are RESTRICT rather than CASCADE
-    await db.address.deleteMany({});
+    // Clean slate per test — User holds the FK to Address (User.address_id),
+    // so the referencing side must be cleared/deleted BEFORE the referenced
+    // Address rows, or Prisma's default `Restrict` action rejects the delete.
     await db.user.deleteMany({
       where: { email: { contains: '@e2e-test.com' } },
     });
+    await db.address.deleteMany({});
 
     const [userA, userB] = await Promise.all([
       db.user.create({
         data: {
           email: 'a@e2e-test.com',
-          first_name: 'A' /* ...whatever else is required */,
+          first_name: 'A',
+          last_name: 'TestA',
+          password_hash: 'e2e-test-placeholder-hash',
         },
       }),
-      db.user.create({ data: { email: 'b@e2e-test.com', first_name: 'B' } }),
+      db.user.create({
+        data: {
+          email: 'b@e2e-test.com',
+          first_name: 'B',
+          last_name: 'TestB',
+          password_hash: 'e2e-test-placeholder-hash',
+        },
+      }),
     ]);
     userAId = userA.id;
     userBId = userB.id;
   });
 
   afterAll(async () => {
-    await db.address.deleteMany({});
     await db.user.deleteMany({
       where: { email: { contains: '@e2e-test.com' } },
     });
+    await db.address.deleteMany({});
     await app.close();
   });
 
   it('creates a real row in Postgres and links the user via a real FK update', async () => {
     const res = await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .send({
         street: 'Rua A, 1',
@@ -106,12 +117,12 @@ describe('Address (e2e)', () => {
     };
 
     const resA = await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .send(sameAddress)
       .expect(201);
     const resB = await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userBId}`)
       .set('x-test-user-id', userBId)
       .send(sameAddress)
       .expect(201);
@@ -124,7 +135,7 @@ describe('Address (e2e)', () => {
 
   it('orphan cleanup actually deletes the row when the last user detaches', async () => {
     const created = await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .send({
         street: 'Rua B, 2',
@@ -136,7 +147,7 @@ describe('Address (e2e)', () => {
       .expect(201);
 
     await request(app.getHttpServer())
-      .delete('/address/me')
+      .delete(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .expect(200);
 
@@ -156,18 +167,18 @@ describe('Address (e2e)', () => {
     };
 
     const created = await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .send(sameAddress)
       .expect(201);
     await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userBId}`)
       .set('x-test-user-id', userBId)
       .send(sameAddress)
       .expect(201);
 
     await request(app.getHttpServer())
-      .delete('/address/me')
+      .delete(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .expect(200);
 
@@ -187,18 +198,18 @@ describe('Address (e2e)', () => {
     };
 
     const created = await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .send(original)
       .expect(201);
     await request(app.getHttpServer())
-      .post('/address')
+      .post(`/address/user/${userBId}`)
       .set('x-test-user-id', userBId)
       .send(original)
       .expect(201); // B shares A's address
 
     const updated = await request(app.getHttpServer())
-      .patch('/address/me')
+      .patch(`/address/user/${userAId}`)
       .set('x-test-user-id', userAId)
       .send({ street: 'Rua D, 4-A' })
       .expect(200);

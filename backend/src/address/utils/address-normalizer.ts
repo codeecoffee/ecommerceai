@@ -5,7 +5,7 @@ export class AddressNormalizer {
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .trim()
-      .replace(/|s+/g, ' ')
+      .replace(/\s+/g, ' ')
       .replace(/[.,]+$/, '');
   }
   static normalizePostalCode(value: string): string {
