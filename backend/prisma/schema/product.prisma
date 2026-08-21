@@ -6,6 +6,7 @@ model Product {
   photo_url       String?
   price           Decimal
   stock_qty       Int
+  is_active       Boolean            @default(true)
   category_id     String
   category        Category           @relation(fields: [category_id], references: [category_id])
   recommendations Recommendation[]
@@ -15,4 +16,6 @@ model Product {
   order_items     Order_item[]
   created_at      DateTime           @default(now())
   updated_at      DateTime           @updatedAt
+  @@index([category_id])
+  @@index([is_active])
 }
