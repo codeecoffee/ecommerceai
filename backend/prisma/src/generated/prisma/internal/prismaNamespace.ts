@@ -1518,6 +1518,7 @@ export const ProductScalarFieldEnum = {
   photo_url: 'photo_url',
   price: 'price',
   stock_qty: 'stock_qty',
+  is_active: 'is_active',
   category_id: 'category_id',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -1705,6 +1706,13 @@ export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'PaymentStatus[]'
  */
 export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
