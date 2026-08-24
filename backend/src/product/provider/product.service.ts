@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
@@ -40,6 +41,7 @@ export class ProductService {
       ) {
         throw new ConflictException(`SKU ${dto.sku} already exists`);
       }
+      throw err;
     }
   }
 
@@ -78,15 +80,81 @@ export class ProductService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  public async findOne(id: string): Promise<ProductResponseDto> {
+    const product = await this.dbService.product.findUnique({
+      where: { prod_id: id },
+    });
+    if (!product)
+      throw new NotFoundException(`Product with id ${id} not found`);
+    return ProductMapper.toResponseDto(product);
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  public async update(
+    id: string,
+    dto: UpdateProductDto,
+  ): Promise<ProductResponseDto> {
+    if (dto.categoryId) await this.assertCategoryExists(dto.categoryId);
+
+    try {
+      const product = await this.dbService.product.update({
+        where: { prod_id: id },
+        data: ProductMapper.toUpdateInput(dto),
+      });
+      return ProductMapper.toResponseDto(product);
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code == 'P2025')
+          throw new NotFoundException(`Product with id ${id} not found`);
+        if (err.code == 'P2002')
+          throw new ConflictException(`SKU ${dto.sku} already exists`);
+      }
+      throw err;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  public async adjustStock(
+    prodId: string,
+    delta: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void> {
+    const client = tx ?? this.dbService;
+    const result = await client.product.updateMany({
+      where: {
+        prod_id: prodId,
+        ...(delta < 0 && { stock_qty: { gte: -delta } }),
+      },
+      data: { stock_qty: { increment: delta } },
+    });
+    if (result.count === 0) {
+      throw new ConflictException(
+        delta < 0
+          ? `Insufficient stock for product ${prodId}`
+          : `Product ${prodId} not found`,
+      );
+    }
+  }
+
+  public async remove(id: string): Promise<{ deleted: boolean }> {
+    return this.dbService.$transaction(async (tx) => {
+      const product = await tx.product.update({
+        where: { prod_id: id },
+        data: { is_active: false },
+      });
+      const [orderItemCount, cartItemCount, purchaseHistCount] =
+        await Promise.all([
+          tx.order_item.count({ where: { prod_id: product.prod_id } }),
+          tx.cart_item.count({ where: { prod_id: product.prod_id } }),
+          tx.purchase_history.count({ where: { prod_id: product.prod_id } }),
+        ]);
+      if (
+        orderItemCount == 0 &&
+        cartItemCount === 0 &&
+        purchaseHistCount === 0
+      ) {
+        await tx.product.delete({ where: { prod_id: product.prod_id } });
+        return { deleted: true };
+      }
+      return { deleted: false };
+    });
   }
 }
