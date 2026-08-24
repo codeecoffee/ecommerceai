@@ -121,7 +121,9 @@ export const CategoryScalarFieldEnum = {
   category_id: 'category_id',
   name: 'name',
   description: 'description',
-  parent_category_id: 'parent_category_id'
+  parent_category_id: 'parent_category_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
