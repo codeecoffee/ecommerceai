@@ -112,7 +112,7 @@ export class CartService {
       });
 
       return tx.cart.findUniqueOrThrow({
-        where: { cart_id: cartItemId },
+        where: { cart_id: item.cart_id },
         include: { cart_items: true },
       });
     });
@@ -137,7 +137,7 @@ export class CartService {
       await tx.cart_item.delete({ where: { cart_item_id: cartItemId } });
 
       return tx.cart.findUniqueOrThrow({
-        where: { cart_id: cartItemId },
+        where: { cart_id: item.cart_id },
         include: { cart_items: true },
       });
     });
