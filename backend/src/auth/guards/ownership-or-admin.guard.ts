@@ -66,6 +66,13 @@ export class OwnershipOrAdminGuard implements CanActivate {
       case 'product': {
         return false; // products aren't user-owned — this case probably never applies
       }
+      case 'payment': {
+        const payment = await this.dbService.payment.findUnique({
+          where: { payment_id: resourceId },
+          select: { order: { select: { user_id: true } } },
+        });
+        return payment?.order.user_id === userId;
+      }
 
       default:
         return false;

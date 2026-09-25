@@ -1,9 +1,15 @@
 model Payment {
   payment_id     String        @id @default(uuid())
-  provider       String
-  transaction_id String
+  provider       String?
+  transaction_id String?
   status         PaymentStatus @default(PENDING)
+  amount         Decimal
+  order          Order         @relation(fields: [order_id], references: [order_id])
+  order_id       String        @unique
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
 }
+
 enum PaymentStatus {
   PENDING // payment initiated, not yet confirmed
   PROCESSING // actively being processed by the provider

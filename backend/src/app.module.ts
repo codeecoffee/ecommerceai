@@ -11,7 +11,7 @@ import { AddressModule } from './address/address.module';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { OrderModule } from './order/order.module';
-import { CartModule } from './cart/cart.module';
+import { PaymentModule } from './payment/payment.module';
 import { CartModule } from './cart/cart.module';
 
 @Module({
@@ -25,6 +25,7 @@ import { CartModule } from './cart/cart.module';
     CategoryModule,
     OrderModule,
     CartModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

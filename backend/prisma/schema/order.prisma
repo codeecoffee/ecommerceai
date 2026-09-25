@@ -4,6 +4,7 @@ model Order {
   total         Decimal
   purchase_hist Purchase_history[]
   order_items   Order_item[]
+  payment       Payment?
   user          User               @relation(fields: [user_id], references: [id])
   user_id       String
   address       Address            @relation(fields: [address_id], references: [address_id])

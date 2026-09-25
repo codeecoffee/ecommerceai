@@ -157,7 +157,11 @@ export const PaymentScalarFieldEnum = {
   payment_id: 'payment_id',
   provider: 'provider',
   transaction_id: 'transaction_id',
-  status: 'status'
+  status: 'status',
+  amount: 'amount',
+  order_id: 'order_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]

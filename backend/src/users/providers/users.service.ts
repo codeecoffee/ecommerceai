@@ -3,7 +3,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -191,6 +190,6 @@ export class UsersService {
   }
 
   public async removeUserAddress(userId: string) {
-    return this.addressService.removeUserFromAddressAndCleanUp(userId);
+    return this.addressService.deleteAddressForUser(userId);
   }
 }
