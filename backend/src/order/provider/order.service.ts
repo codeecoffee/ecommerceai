@@ -15,11 +15,10 @@ import {
   Prisma,
 } from '../../../prisma/src/generated/prisma/client';
 import { OrderResponseDto } from '../dto/response-order.dto';
-import { OrderMapper } from '../mapper/order.mapper';
+import { OrderMapper, OrderWithItems } from '../mapper/order.mapper';
 import { OrderQueryDto } from '../dto/get-orders-query.dto';
 import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
 import { CartService } from '../../cart/provider/cart.service';
-//TODO: wire the payment module. Right now this is triggered by admin actions
 
 const ORDER_STATE_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
@@ -56,7 +55,6 @@ export class OrderService {
    * Everything below runs inside one prisma.$transaction — inventory
    * decrement, order + order-item creation, and (when registered) the
    * payment hook — per BR-ORDER-05 and NFR "narrow transactions" guidance.
-   * Nothing non-database (no external calls, no emails) happens inside it.
    */
   async checkout(userId: string): Promise<OrderResponseDto> {
     const order = await this.prisma.$transaction(async (tx) => {
@@ -70,8 +68,6 @@ export class OrderService {
         );
       }
 
-      // Retired the raw-Prisma shim now that CartModule exists — reads go
-      // through CartService so Cart's read logic lives in exactly one place.
       const cart = await this.cartService.findActiveCartWithItems(userId, tx);
       if (!cart || cart.cart_items.length === 0) {
         throw new BadRequestException('Cart is empty');
@@ -87,7 +83,6 @@ export class OrderService {
       for (const cartItem of cart.cart_items) {
         // adjustStock() is the actual concurrency guard here (atomic
         // conditional updateMany) — it throws if there isn't enough stock.
-        // This loop does NOT re-implement that check; it relies on it.
         await this.productService.adjustStock(
           cartItem.prod_id,
           -cartItem.quantity,
@@ -149,9 +144,31 @@ export class OrderService {
       return createdOrder;
     });
 
+    // Deliberately OUTSIDE the $transaction above. Any external gateway
+    // call must never hold a DB transaction/row-lock open for its
+    // duration (NFR, project_specs.md section 10) — this is why the
+    // interface splits payment creation (a pure DB write, safe inside the
+    // transaction) from this step (an external call, safe only outside it).
+    //
+    // Errors here are caught, not rethrown: the order and its PENDING
+    // payment row already committed successfully, so the checkout request
+    // itself still succeeds even if the gateway step fails. The Payment
+    // row is left however the hook's own implementation leaves it
+    // (typically still PENDING) for a later retry.
+    if (this.paymentHook?.afterCheckoutCommitted) {
+      try {
+        await this.paymentHook.afterCheckoutCommitted(order.order_id);
+      } catch (err) {
+        // TODO: replace with your actual logger.
+        console.error(
+          `Payment gateway step failed for order ${order.order_id}`,
+          err,
+        );
+      }
+    }
+
     return OrderMapper.toResponseDto(order);
   }
-
   async findOne(orderId: string): Promise<OrderResponseDto> {
     const order = await this.prisma.order.findUnique({
       where: { order_id: orderId },
@@ -163,7 +180,6 @@ export class OrderService {
     return OrderMapper.toResponseDto(order);
   }
 
-  /** Backs GET /orders — always scoped to the requesting user, ignores query.userId. */
   async findAllForUser(
     userId: string,
     query: OrderQueryDto,

@@ -1,4 +1,7 @@
-import { PaymentStatus } from '../../../prisma/src/generated/prisma/enums';
+import {
+  PaymentStatus,
+  Prisma,
+} from '../../../prisma/src/generated/prisma/client';
 import {
   forwardRef,
   Inject,
@@ -8,9 +11,11 @@ import {
 import { OrderPaymentHook } from '../../order/interface/order-payment-hook.interface';
 import { DatabaseService } from '../../database/providers/database.service';
 import { OrderService } from '../../order/provider/order.service';
-import { Prisma } from '@prisma/client/extension';
 import { PaymentResponseDto } from '../dto/response-payment.dto';
 import { PaymentMapper } from '../mappers/payment.mapper';
+import type { PaymentGateway } from '../interfaces/payment-gateway.interface';
+import { PAYMENT_GATEWAY } from '../interfaces/payment-gateway.interface';
+import { ConfigService } from '@nestjs/config';
 
 const PAYMENT_STATE_TRANSITIONS: Record<PaymentStatus, PaymentStatus[]> = {
   [PaymentStatus.PENDING]: [
@@ -32,14 +37,19 @@ const PAYMENT_STATE_TRANSITIONS: Record<PaymentStatus, PaymentStatus[]> = {
   [PaymentStatus.CANCELLED]: [],
   [PaymentStatus.REFUNDED]: [],
 };
-
 @Injectable()
 export class PaymentService implements OrderPaymentHook {
+  private readonly currency: string;
   constructor(
     private readonly dbservice: DatabaseService,
     @Inject(forwardRef(() => OrderService))
     private readonly orderService: OrderService,
-  ) {}
+    @Inject(PAYMENT_GATEWAY)
+    private readonly gateway: PaymentGateway,
+    private readonly configService: ConfigService,
+  ) {
+    this.currency = this.configService.get<string>('STRIPE_CURRENCY', 'usd');
+  }
 
   async createPaymentForOrder(
     params: { orderId: string; amount: number },
@@ -85,6 +95,7 @@ export class PaymentService implements OrderPaymentHook {
     await this.orderService.cancel(result.orderId);
     return result;
   }
+
   refund(paymentId: string) {
     return this.transition(paymentId, PaymentStatus.REFUNDED);
   }
@@ -95,6 +106,7 @@ export class PaymentService implements OrderPaymentHook {
   private async transition(
     paymentId: string,
     target: PaymentStatus,
+    extraData: Partial<Prisma.PaymentUpdateInput> = {},
   ): Promise<PaymentResponseDto> {
     const payment = await this.dbservice.$transaction(async (tx) => {
       const existing = await tx.payment.findUnique({
@@ -109,10 +121,38 @@ export class PaymentService implements OrderPaymentHook {
 
       return tx.payment.update({
         where: { payment_id: paymentId },
-        data: { status: target },
+        data: { status: target, ...extraData },
       });
     });
 
     return PaymentMapper.toResponseDto(payment);
+  }
+
+  async afterCheckoutCommitted(orderId: string): Promise<void> {
+    const payment = await this.dbservice.payment.findUniqueOrThrow({
+      where: { order_id: orderId },
+    });
+
+    const result = await this.gateway.createAndConfirmPayment({
+      amountInCents: Math.round(Number(payment.amount) * 100),
+      currency: this.currency,
+    });
+
+    // PENDING -> PROCESSING first so the transition table's contract holds
+    // even in this synchronous path (nothing skips straight to
+    // COMPLETED/FAILED) — also where provider/transactionId get recorded.
+    await this.transition(payment.payment_id, PaymentStatus.PROCESSING, {
+      provider: 'stripe',
+      transaction_id: result.transactionId,
+    });
+
+    if (result.succeeded) {
+      // complete() also confirms the parent Order — see below.
+      await this.complete(payment.payment_id);
+    } else {
+      // Test-mode decline. Treated the same as a real decline would be:
+      // fail() cancels the parent order and releases reserved stock.
+      await this.fail(payment.payment_id);
+    }
   }
 }
