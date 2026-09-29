@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../../users/providers/users.service';
 import { DatabaseService } from '../../database/providers/database.service';
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { PostsMapper } from '../mappers/posts.mapper';
 import { UpdatePostDto } from '../dto/update-post.dto';

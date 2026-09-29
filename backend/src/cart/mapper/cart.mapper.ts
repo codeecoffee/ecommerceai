@@ -1,4 +1,4 @@
-import { Cart, Cart_item } from '../../../prisma/src/generated/prisma/client';
+import { Cart, Cart_item } from '../../generated/prisma/client';
 import { CartResponseDto } from '../dto/response-cart.dto';
 import { CartItemMapper } from './cartItem.mapper';
 

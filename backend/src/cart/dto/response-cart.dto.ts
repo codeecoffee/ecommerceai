@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CartItemResponseDto } from './response-cartItem.dto';
-import { Status as CartStatus } from '../../../prisma/src/generated/prisma/client';
+import { Status as CartStatus } from '../../generated/prisma/client';
 
 export class CartResponseDto {
   @ApiProperty({

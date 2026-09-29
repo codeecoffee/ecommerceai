@@ -10,7 +10,7 @@ import { CategoryResponseDto } from '../dto/response-category.dto';
 import { CategoryMapper } from '../mapper/category.mapper';
 import { CategoryQueryDto } from '../dto/get-category-query.dto';
 import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import { CategoryTreeNodeDto } from '../dto/category-tree-node.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
 

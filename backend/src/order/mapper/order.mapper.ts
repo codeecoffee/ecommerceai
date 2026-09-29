@@ -1,9 +1,6 @@
 import { OrderResponseDto } from '../dto/response-order.dto';
 import { OrderItemMapper } from './order-item.mapper';
-import type {
-  Order,
-  Order_item,
-} from '../../../prisma/src/generated/prisma/client';
+import type { Order, Order_item } from '../../generated/prisma/client';
 
 export type OrderWithItems = Order & { order_items: Order_item[] };
 

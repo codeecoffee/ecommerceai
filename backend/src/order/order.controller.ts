@@ -16,7 +16,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { OwnershipOrAdminGuard } from '../auth/guards/ownership-or-admin.guard';
 import { CheckOwnership } from '../auth/decorators/check-ownership.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { Role } from '../../prisma/src/generated/prisma/client';
+import { Role } from '../generated/prisma/client';
 
 import { OrderService } from './provider/order.service';
 import { OrderQueryDto } from './dto/get-orders-query.dto';

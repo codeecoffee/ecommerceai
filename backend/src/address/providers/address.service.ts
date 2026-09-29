@@ -9,7 +9,7 @@ import { UpdateAddressDto } from '../dto/update-address.dto';
 import { DatabaseService } from '../../database/providers/database.service';
 import { AddressMapper } from '../mappers/address.mapper';
 import { ResponseAddressDto } from '../dto/response-address.dto';
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import { GetAddressQueryDto } from '../dto/get-address-query.dto';
 import { ADDRESS_GEOCODER } from '../interfaces/address-geocoder.token';
 import type {

@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DatabaseService } from '../../database/providers/database.service';
-import { User } from '../../../prisma/src/generated/prisma/client';
+import { User } from '../../generated/prisma/client';
 import {
   OWNERSHIP_KEY,
   OwnershipConfig,

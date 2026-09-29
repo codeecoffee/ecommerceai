@@ -1,5 +1,5 @@
 import { CartItemResponseDto } from '../dto/response-cartItem.dto';
-import type { Cart_item } from '../../../prisma/src/generated/prisma/client';
+import type { Cart_item } from '../../generated/prisma/client';
 
 export class CartItemMapper {
   static toResponseDto(item: Cart_item): CartItemResponseDto {

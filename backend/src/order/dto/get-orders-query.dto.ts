@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsUUID, Min } from 'class-validator';
-import { OrderStatus } from '../../../prisma/src/generated/prisma/client';
+import { OrderStatus } from '../../generated/prisma/client';
 
 export class OrderQueryDto {
   @ApiPropertyOptional({ enum: OrderStatus })

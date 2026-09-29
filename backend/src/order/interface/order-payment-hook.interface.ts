@@ -1,4 +1,4 @@
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 
 /**
  * Extension point for the not-yet-built Payment module.

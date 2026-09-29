@@ -1,4 +1,4 @@
-import { Address, Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Address, Prisma } from '../../generated/prisma/client';
 import { ResponseAddressDto } from '../dto/response-address.dto';
 import { AddressNormalizer } from '../utils/address-normalizer';
 

@@ -10,12 +10,9 @@ import { DatabaseService } from '../../database/providers/database.service';
 import { ProductService } from '../../product/provider/product.service';
 import type { OrderPaymentHook } from '../interface/order-payment-hook.interface';
 import { ORDER_PAYMENT_HOOK } from '../interface/order-payment-hook.interface';
-import {
-  OrderStatus,
-  Prisma,
-} from '../../../prisma/src/generated/prisma/client';
+import { OrderStatus, Prisma } from '../../generated/prisma/client';
 import { OrderResponseDto } from '../dto/response-order.dto';
-import { OrderMapper, OrderWithItems } from '../mapper/order.mapper';
+import { OrderMapper } from '../mapper/order.mapper';
 import { OrderQueryDto } from '../dto/get-orders-query.dto';
 import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
 import { CartService } from '../../cart/provider/cart.service';

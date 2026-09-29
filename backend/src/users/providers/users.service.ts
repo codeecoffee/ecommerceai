@@ -5,11 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  Prisma,
-  Role,
-  User,
-} from '../../../prisma/src/generated/prisma/client';
+import { Prisma, Role, User } from '../../generated/prisma/client';
 import { AuthService } from '../../auth/providers/auth.service';
 import { DatabaseService } from '../../database/providers/database.service';
 import { CreateUserDto } from '../dto/create-user.dto';

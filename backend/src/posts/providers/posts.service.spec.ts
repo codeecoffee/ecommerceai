@@ -4,7 +4,7 @@ import { PostsService } from './posts.service';
 import { UsersService } from '../../users/providers/users.service';
 import { DatabaseService } from '../../database/providers/database.service';
 import { PostsMapper } from '../mappers/posts.mapper';
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 
 /**
  * NOTE on scope: this file mocks DatabaseService completely, so it never

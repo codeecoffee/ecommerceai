@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderItemResponseDto } from './response-order-item.dto';
 // Adjust this import to match wherever your generated Prisma client actually resolves.
-import { OrderStatus } from '../../../prisma/src/generated/prisma/client';
+import { OrderStatus } from '../../generated/prisma/client';
 
 export class OrderResponseDto {
   @ApiProperty()

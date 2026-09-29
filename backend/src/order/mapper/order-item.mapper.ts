@@ -1,5 +1,5 @@
 import { OrderItemResponseDto } from '../dto/response-order-item.dto';
-import type { Order_item } from '../../../prisma/src/generated/prisma/client';
+import type { Order_item } from '../../generated/prisma/client';
 
 export class OrderItemMapper {
   static toResponseDto(item: Order_item): OrderItemResponseDto {

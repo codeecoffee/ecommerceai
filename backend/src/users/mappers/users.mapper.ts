@@ -1,5 +1,5 @@
 import { CreateUserDto } from '../dto/create-user.dto';
-import { Prisma, User } from '../../../prisma/src/generated/prisma/client';
+import { Prisma, User } from '../../generated/prisma/client';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/response-user.dto';
 

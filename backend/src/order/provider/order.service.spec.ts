@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { OrderStatus } from '../../../prisma/src/generated/prisma/client';
+import { OrderStatus } from '../../generated/prisma/client';
 import { CartService } from '../../cart/provider/cart.service';
 
 /**

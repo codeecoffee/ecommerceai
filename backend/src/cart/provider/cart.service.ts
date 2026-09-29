@@ -9,7 +9,7 @@ import { CartResponseDto } from '../dto/response-cart.dto';
 import { CartMapper } from '../mapper/cart.mapper';
 import { CreateCartItemDto } from '../dto/create-cartItem.dto';
 import { UpdateCartItemDto } from '../dto/update-cartItem.dto';
-import type { Prisma } from '../../../prisma/src/generated/prisma/client';
+import type { Prisma } from '../../generated/prisma/client';
 
 @Injectable()
 export class CartService {

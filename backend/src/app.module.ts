@@ -13,6 +13,7 @@ import { CategoryModule } from './category/category.module';
 import { OrderModule } from './order/order.module';
 import { PaymentModule } from './payment/payment.module';
 import { CartModule } from './cart/cart.module';
+import { CacheModule } from './common/cache/cache.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CartModule } from './cart/cart.module';
     OrderModule,
     CartModule,
     PaymentModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

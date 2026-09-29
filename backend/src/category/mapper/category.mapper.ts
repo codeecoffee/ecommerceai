@@ -1,4 +1,4 @@
-import { Category, Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Category, Prisma } from '../../generated/prisma/client';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { CategoryResponseDto } from '../dto/response-category.dto';

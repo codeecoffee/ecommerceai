@@ -1,5 +1,5 @@
 import { CreateProductDto } from '../dto/create-product.dto';
-import { Prisma, Product } from '../../../prisma/src/generated/prisma/client';
+import { Prisma, Product } from '../../generated/prisma/client';
 import { UpdateProductDto } from '../dto/update-product.dto';
 import { ProductResponseDto } from '../dto/response-product.dto';
 

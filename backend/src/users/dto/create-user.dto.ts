@@ -10,7 +10,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Role } from '../../../prisma/src/generated/prisma/client';
+import { Role } from '../../generated/prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {

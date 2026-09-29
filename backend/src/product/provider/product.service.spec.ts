@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { DatabaseService as PrismaService } from '../../database/providers/database.service';
+import { CacheService } from '../../common/cache/providers/cache.service';
 
 describe('ProductService', () => {
   let service: ProductService;
@@ -20,6 +21,11 @@ describe('ProductService', () => {
     cart_item: { count: jest.Mock };
     purchase_history: { count: jest.Mock };
     $transaction: jest.Mock;
+  };
+  let cacheService: {
+    get: jest.Mock;
+    set: jest.Mock;
+    del: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -39,8 +45,22 @@ describe('ProductService', () => {
       $transaction: jest.fn(),
     };
 
+    // Fresh each test, same as `prisma` above — default to "always a cache
+    // miss" so every existing test (written before caching existed)
+    // continues to exercise the real Postgres path unless a test
+    // deliberately overrides cacheService.get to simulate a hit.
+    cacheService = {
+      get: jest.fn().mockResolvedValue(null),
+      set: jest.fn(),
+      del: jest.fn(),
+    };
+
     const module = await Test.createTestingModule({
-      providers: [ProductService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        ProductService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: CacheService, useValue: cacheService },
+      ],
     }).compile();
 
     service = module.get(ProductService);
@@ -127,6 +147,22 @@ describe('ProductService', () => {
         updatedAt: baseProduct.updated_at,
       });
     });
+
+    it('does not touch the cache — nothing to invalidate for a brand-new product', async () => {
+      prisma.category.findUnique.mockResolvedValue({ category_id: 'c1' });
+      prisma.product.create.mockResolvedValue(baseProduct);
+
+      await service.create({
+        sku: 'SKU-1',
+        name: 'Widget',
+        description: 'desc',
+        price: 9.99,
+        stockQty: 10,
+        categoryId: 'c1',
+      });
+
+      expect(cacheService.del).not.toHaveBeenCalled();
+    });
   });
 
   describe('findAll', () => {
@@ -136,6 +172,76 @@ describe('ProductService', () => {
       await service.findAll({ page: 1, limit: 20 });
 
       expect(prisma.$transaction).toHaveBeenCalled();
+    });
+
+    it('checks the cache first, keyed by the filter combination', async () => {
+      const cachedResult = {
+        data: [],
+        metadata: { total: 0, page: 1, limit: 20, totalPages: 0 },
+      };
+      cacheService.get.mockResolvedValue(cachedResult);
+
+      const result = await service.findAll({ page: 1, limit: 20 });
+
+      expect(result).toBe(cachedResult);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+
+    it('on a miss, populates the cache with a short TTL', async () => {
+      prisma.$transaction.mockResolvedValue([[baseProduct], 1]);
+
+      await service.findAll({ page: 1, limit: 20 });
+
+      expect(cacheService.set).toHaveBeenCalledWith(
+        expect.stringContaining('products:list:'),
+        expect.objectContaining({
+          metadata: expect.objectContaining({ total: 1 }),
+        }),
+        30,
+      );
+    });
+
+    it('does NOT use or populate the cache for the admin (includeInactive) path', async () => {
+      prisma.$transaction.mockResolvedValue([[baseProduct], 1]);
+
+      await service.findAll({ page: 1, limit: 20 }, { includeInactive: true });
+
+      expect(cacheService.get).not.toHaveBeenCalled();
+      expect(cacheService.set).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findOne', () => {
+    it('returns the cached value on a hit, without touching Prisma', async () => {
+      cacheService.get.mockResolvedValue({ id: 'p1', name: 'Cached Widget' });
+
+      const result = await service.findOne('p1');
+
+      expect(result).toEqual({ id: 'p1', name: 'Cached Widget' });
+      expect(prisma.product.findUnique).not.toHaveBeenCalled();
+    });
+
+    it('on a miss, queries Prisma and populates the cache', async () => {
+      prisma.product.findUnique.mockResolvedValue(baseProduct);
+
+      const result = await service.findOne('p1');
+
+      expect(prisma.product.findUnique).toHaveBeenCalledWith({
+        where: { prod_id: 'p1' },
+      });
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'product:p1',
+        expect.objectContaining({ id: 'p1' }),
+        300,
+      );
+      expect(result.id).toBe('p1');
+    });
+
+    it('does not cache a miss that results in NotFoundException', async () => {
+      prisma.product.findUnique.mockResolvedValue(null);
+
+      await expect(service.findOne('missing')).rejects.toThrow('not found');
+      expect(cacheService.set).not.toHaveBeenCalled();
     });
   });
 
@@ -169,10 +275,31 @@ describe('ProductService', () => {
       expect(txClient.product.updateMany).toHaveBeenCalled();
       expect(prisma.product.updateMany).not.toHaveBeenCalled();
     });
+
+    it("does NOT touch the cache here — invalidation is the caller's (OrderService's) responsibility, see chat", async () => {
+      prisma.product.updateMany.mockResolvedValue({ count: 1 });
+
+      await service.adjustStock('p1', -1);
+
+      expect(cacheService.del).not.toHaveBeenCalled();
+    });
+  });
+
+  // NOTE: I don't have visibility into whether you already have an
+  // `update` describe block with other test cases — if so, merge this
+  // test into it rather than letting this block duplicate/replace it.
+  describe('update', () => {
+    it('deletes the product cache entry after a successful update', async () => {
+      prisma.product.update.mockResolvedValue(baseProduct);
+
+      await service.update('p1', { name: 'New Name' });
+
+      expect(cacheService.del).toHaveBeenCalledWith('product:p1');
+    });
   });
 
   describe('remove (orphan-delete pattern)', () => {
-    it('hard-deletes when no order_items, cart_items, or purchase_history reference it', async () => {
+    it('hard-deletes when no order_items, cart_items, or purchase_history reference it, and busts the cache', async () => {
       const tx = {
         product: {
           update: jest.fn().mockResolvedValue(baseProduct),
@@ -190,9 +317,10 @@ describe('ProductService', () => {
         where: { prod_id: 'p1' },
       });
       expect(result).toEqual({ deleted: true });
+      expect(cacheService.del).toHaveBeenCalledWith('product:p1');
     });
 
-    it('soft-deletes only when the product is still referenced', async () => {
+    it('soft-deletes only when the product is still referenced, and STILL busts the cache', async () => {
       const tx = {
         product: {
           update: jest.fn().mockResolvedValue(baseProduct),
@@ -212,6 +340,10 @@ describe('ProductService', () => {
         where: { prod_id: 'p1' },
         data: { is_active: false },
       });
+      // Even though the row still exists (soft-deleted), the previously
+      // cached response is now wrong (is_active flipped) — must still
+      // invalidate, not just on the hard-delete branch.
+      expect(cacheService.del).toHaveBeenCalledWith('product:p1');
     });
   });
 });

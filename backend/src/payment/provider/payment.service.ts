@@ -1,7 +1,4 @@
-import {
-  PaymentStatus,
-  Prisma,
-} from '../../../prisma/src/generated/prisma/client';
+import { PaymentStatus, Prisma } from '../../generated/prisma/client';
 import {
   forwardRef,
   Inject,

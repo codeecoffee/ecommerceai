@@ -9,13 +9,43 @@ import { UpdateProductDto } from '../dto/update-product.dto';
 import { DatabaseService } from '../../database/providers/database.service';
 import { ProductResponseDto } from '../dto/response-product.dto';
 import { ProductMapper } from '../mapper/product.mapper';
-import { Prisma } from '../../../prisma/src/generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import { ProductQueryDto } from '../dto/get-product-query.dto';
 import { PaginatedResponseDto } from '../../common/dto/response-paginated.dto';
+import { CacheService } from '../../common/cache/providers/cache.service';
+
+const PRODUCT_DETAIL_TTL_SECONDS = 300;
+const PRODUCT_LIST_TTL_SECONDS = 30;
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(
+    private readonly dbService: DatabaseService,
+    private readonly cacheService: CacheService,
+  ) {}
+
+  private productCacheKey(id: string): string {
+    return `product:${id}`;
+  }
+
+  private productListCacheKey(query: ProductQueryDto): string {
+    const {
+      page = 1,
+      limit = 20,
+      categoryId,
+      search,
+      minPrice,
+      maxPrice,
+    } = query;
+    return `products:list:${JSON.stringify({
+      page,
+      limit,
+      categoryId,
+      search,
+      minPrice,
+      maxPrice,
+    })}`;
+  }
 
   private async assertCategoryExists(categoryId: string) {
     const category = await this.dbService.category.findUnique({
@@ -49,6 +79,14 @@ export class ProductService {
     query: ProductQueryDto,
     { includeInactive = false }: { includeInactive?: boolean } = {},
   ): Promise<PaginatedResponseDto<ProductResponseDto>> {
+    const cacheKey = !includeInactive ? this.productListCacheKey(query) : null;
+    if (cacheKey) {
+      const cached =
+        await this.cacheService.get<PaginatedResponseDto<ProductResponseDto>>(
+          cacheKey,
+        );
+      if (cached) return cached;
+    }
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
     const where: Prisma.ProductWhereInput = {
@@ -74,19 +112,30 @@ export class ProductService {
       this.dbService.product.count({ where }),
     ]);
 
-    return {
+    const result: PaginatedResponseDto<ProductResponseDto> = {
       data: data.map((product) => ProductMapper.toResponseDto(product)),
       metadata: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
+    if (cacheKey)
+      await this.cacheService.set(cacheKey, result, PRODUCT_LIST_TTL_SECONDS);
+
+    return result;
   }
 
   public async findOne(id: string): Promise<ProductResponseDto> {
+    const cacheKey = this.productCacheKey(id);
+    const cached = await this.cacheService.get<ProductResponseDto>(cacheKey);
+    if (cached) return cached;
     const product = await this.dbService.product.findUnique({
       where: { prod_id: id },
     });
     if (!product)
       throw new NotFoundException(`Product with id ${id} not found`);
-    return ProductMapper.toResponseDto(product);
+
+    const result = ProductMapper.toResponseDto(product);
+    await this.cacheService.set(cacheKey, result, PRODUCT_DETAIL_TTL_SECONDS);
+
+    return result;
   }
 
   public async update(
@@ -100,6 +149,7 @@ export class ProductService {
         where: { prod_id: id },
         data: ProductMapper.toUpdateInput(dto),
       });
+      await this.cacheService.del(this.productCacheKey(id));
       return ProductMapper.toResponseDto(product);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -135,7 +185,7 @@ export class ProductService {
   }
 
   public async remove(id: string): Promise<{ deleted: boolean }> {
-    return this.dbService.$transaction(async (tx) => {
+    const result = await this.dbService.$transaction(async (tx) => {
       const product = await tx.product.update({
         where: { prod_id: id },
         data: { is_active: false },
@@ -156,5 +206,7 @@ export class ProductService {
       }
       return { deleted: false };
     });
+    await this.cacheService.del(this.productCacheKey(id));
+    return result;
   }
 }

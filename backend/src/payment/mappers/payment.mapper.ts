@@ -1,4 +1,4 @@
-import { Payment } from '../../../prisma/src/generated/prisma/client';
+import { Payment } from '../../generated/prisma/client';
 import { PaymentResponseDto } from '../dto/response-payment.dto';
 
 export class PaymentMapper {

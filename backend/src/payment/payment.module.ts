@@ -16,8 +16,7 @@ import { StripeGatewayService } from './provider/stripe-gateway.service';
   controllers: [PaymentController],
   providers: [
     PaymentService,
-    // This is what wires PaymentService into OrderService's optional
-    // @Inject(ORDER_PAYMENT_HOOK) — see order-payment-hook.interface.ts
+    StripeGatewayService,
     { provide: ORDER_PAYMENT_HOOK, useExisting: PaymentService },
     { provide: PAYMENT_GATEWAY, useExisting: StripeGatewayService },
   ],

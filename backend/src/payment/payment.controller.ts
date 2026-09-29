@@ -6,7 +6,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { OwnershipOrAdminGuard } from '../auth/guards/ownership-or-admin.guard';
 import { CheckOwnership } from '../auth/decorators/check-ownership.decorator';
-import { Role } from '../../prisma/src/generated/prisma/enums';
+import { Role } from '../generated/prisma/enums';
 
 import { PaymentService } from './provider/payment.service';
 
